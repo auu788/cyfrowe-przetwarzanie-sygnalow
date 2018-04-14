@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.collections.FXCollections?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NewSignalWindow">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <Pane prefHeight="358.0" prefWidth="364.0">
+         <children>
+            <Label layoutX="194.0" layoutY="26.0" text="Rodzaj sygnału" />
+            <TextField fx:id="signalNameTxt" layoutX="26.0" layoutY="43.0" prefHeight="25.0" prefWidth="150.0" />
+            <Label layoutX="26.0" layoutY="26.0" text="Nazwa sygału" />
+            <TextField fx:id="signalAmplitudeTxt" layoutX="26.0" layoutY="104.0" prefHeight="25.0" prefWidth="150.0" />
+            <Label layoutX="26.0" layoutY="87.0" text="Amplituda" />
+            <TextField fx:id="signalStartTimeTxt" layoutX="194.0" layoutY="104.0" prefHeight="25.0" prefWidth="150.0" />
+            <TextField fx:id="signalDurationTxt" layoutX="26.0" layoutY="164.0" prefHeight="25.0" prefWidth="150.0" />
+            <TextField fx:id="signalBaseTimeTxt" layoutX="194.0" layoutY="164.0" prefHeight="25.0" prefWidth="150.0" />
+            <TextField fx:id="signalFillFactorTxt" disable="true" layoutX="107.0" layoutY="224.0" prefHeight="25.0" prefWidth="150.0" />
+            <Label layoutX="194.0" layoutY="87.0" text="Czas początkowy" />
+            <Label layoutX="26.0" layoutY="147.0" text="Czas trwania sygnału" />
+            <Label layoutX="194.0" layoutY="147.0" text="Czas podstawowy" />
+            <Label fx:id="signalFillFactorLbl" disable="true" layoutX="107.0" layoutY="207.0" text="Współczynnik wypełnienia" />
+            <Button layoutX="28.0" layoutY="304.0" mnemonicParsing="false" onAction="#generateSignal" text="Wygeneruj sygnał" />
+            <Button layoutX="223.0" layoutY="304.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="111.0" text="Anuluj" />
+            <ComboBox fx:id="signalTypeComboBox" layoutX="194.0" layoutY="43.0" onAction="#signalTypeChanged" prefWidth="150.0" />
+         </children></Pane>
+   </children>
+</GridPane>

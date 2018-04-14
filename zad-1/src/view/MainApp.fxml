@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <Pane prefHeight="520.0" prefWidth="755.0">
+         <children>
+            <ListView fx:id="signalList" layoutX="14.0" layoutY="14.0" prefHeight="280.0" prefWidth="165.0" />
+            <Button layoutX="14.0" layoutY="304.0" mnemonicParsing="false" onAction="#createSignal" prefHeight="25.0" prefWidth="165.0" style="-fx-font-weight: bold;" text="Utwórz sygnał">
+               <font>
+                  <Font name="Lato Bold" size="12.0" />
+               </font>
+            </Button>
+            <Pane layoutX="14.0" layoutY="400.0" prefHeight="101.0" prefWidth="165.0" style="-fx-border-color: grey;">
+               <children>
+                  <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#loadFromFile" prefHeight="25.0" prefWidth="139.0" text="Wczytaj z pliku" />
+                  <Button layoutX="13.0" layoutY="62.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="25.0" prefWidth="139.0" text="Zapisz do pliku" />
+               </children>
+            </Pane>
+            <Pane layoutX="193.0" layoutY="14.0" prefHeight="488.0" prefWidth="548.0" style="-fx-border-color: grey;">
+               <children>
+                  <Label fx:id="noSignalLbl" layoutX="114.0" layoutY="204.0" text="Brak sygnału" textFill="#ffffffb4">
+                     <font>
+                        <Font size="54.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children></Pane>
+   </children>
+</GridPane>
