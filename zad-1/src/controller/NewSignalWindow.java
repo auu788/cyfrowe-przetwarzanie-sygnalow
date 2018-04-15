@@ -15,6 +15,20 @@ public class NewSignalWindow {
     private enum VALIDATION_TYPE { TEXT, INTEGER, DOUBLE }
     private boolean isInputValid;
 
+    private ObservableList<String> signalTypes = FXCollections.observableArrayList(
+            "Szum o rozkładzie jednostajnym",
+            "Szum gaussowski",
+            "Sygnał sinusoidalny",
+            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
+            "Sygnał sinusoidalny wyprostowany dwupołówkowo",
+            "Sygnał prostokątny",
+            "Sygnał prostokątny symetryczny",
+            "Sygnał trójkątny",
+            "Skok jednostkowy",
+            "Impuls jednostkowy",
+            "Szum impulsowy"
+    );
+
     @FXML
     private Label signalFillFactorLbl;
 
@@ -60,20 +74,6 @@ public class NewSignalWindow {
 
     @FXML
     private void initialize() {
-        ObservableList<String> signalTypes = FXCollections.observableArrayList(
-                "Szum o rozkładzie jednostajnym",
-                "Szum gaussowski",
-                "Sygnał sinusoidalny",
-                "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-                "Sygnał sinusoidalny wyprostowany dwupołówkowo",
-                "Sygnał prostokątny",
-                "Sygnał prostokątny symetryczny",
-                "Sygnał trójkątny",
-                "Skok jednostkowy",
-                "Impuls jednostkowy",
-                "Szum impulsowy"
-        );
-
         signalTypeComboBox.setItems(signalTypes);
         signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
 

@@ -18,24 +18,28 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <Pane prefHeight="358.0" prefWidth="364.0">
+      <Pane prefHeight="446.0" prefWidth="399.0">
          <children>
-            <Label layoutX="194.0" layoutY="26.0" text="Rodzaj sygnału" />
-            <TextField fx:id="signalNameTxt" layoutX="26.0" layoutY="43.0" prefHeight="25.0" prefWidth="150.0" />
-            <Label layoutX="26.0" layoutY="26.0" text="Nazwa sygału" />
-            <TextField fx:id="signalAmplitudeTxt" layoutX="26.0" layoutY="104.0" prefHeight="25.0" prefWidth="150.0" />
-            <Label layoutX="26.0" layoutY="87.0" text="Amplituda" />
-            <TextField fx:id="signalStartTimeTxt" layoutX="194.0" layoutY="104.0" prefHeight="25.0" prefWidth="150.0" />
-            <TextField fx:id="signalDurationTxt" layoutX="26.0" layoutY="164.0" prefHeight="25.0" prefWidth="150.0" />
-            <TextField fx:id="signalBaseTimeTxt" layoutX="194.0" layoutY="164.0" prefHeight="25.0" prefWidth="150.0" />
-            <TextField fx:id="signalFillFactorTxt" disable="true" layoutX="107.0" layoutY="224.0" prefHeight="25.0" prefWidth="150.0" />
-            <Label layoutX="194.0" layoutY="87.0" text="Czas początkowy" />
-            <Label layoutX="26.0" layoutY="147.0" text="Czas trwania sygnału" />
-            <Label layoutX="194.0" layoutY="147.0" text="Czas podstawowy" />
-            <Label fx:id="signalFillFactorLbl" disable="true" layoutX="107.0" layoutY="207.0" text="Współczynnik wypełnienia" />
-            <Button layoutX="28.0" layoutY="304.0" mnemonicParsing="false" onAction="#generateSignal" text="Wygeneruj sygnał" />
-            <Button layoutX="223.0" layoutY="304.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="111.0" text="Anuluj" />
-            <ComboBox fx:id="signalTypeComboBox" layoutX="194.0" layoutY="43.0" onAction="#signalTypeChanged" prefWidth="150.0" />
+            <Label layoutX="211.0" layoutY="26.0" text="Rodzaj sygnału" />
+            <Label layoutX="18.0" layoutY="26.0" text="Nazwa sygału" />
+            <Label layoutX="18.0" layoutY="87.0" prefHeight="17.0" prefWidth="63.0" text="Amplituda" />
+            <Label layoutX="211.0" layoutY="87.0" prefHeight="17.0" prefWidth="175.0" text="Czas początkowy" />
+            <Label layoutX="18.0" layoutY="147.0" prefHeight="17.0" prefWidth="118.0" text="Czas trwania sygnału" />
+            <Label layoutX="211.0" layoutY="147.0" prefHeight="17.0" prefWidth="175.0" text="Czas podstawowy" />
+            <Button layoutX="25.0" layoutY="401.0" mnemonicParsing="false" onAction="#generateSignal" text="Wygeneruj sygnał" />
+            <Button layoutX="229.0" layoutY="401.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="111.0" text="Anuluj" />
+            <ComboBox fx:id="signalTypeComboBox" layoutX="210.0" layoutY="43.0" onAction="#signalTypeChanged" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalDurationTxt1" layoutX="17.0" layoutY="223.0" prefHeight="25.0" prefWidth="175.0" />
+            <Label layoutX="18.0" layoutY="206.0" prefHeight="17.0" prefWidth="159.0" text="Częstotliwość próbkowania [f]" />
+            <Label layoutX="18.0" layoutY="259.0" prefHeight="36.0" prefWidth="175.0" text="Numer próbki, dla której następuje skok amplitudy [ns]" textOverrun="CLIP" wrapText="true" />
+            <TextField fx:id="signalFillFactorTxt" layoutX="210.0" layoutY="223.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalNameTxt" layoutX="17.0" layoutY="43.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalAmplitudeTxt" layoutX="17.0" layoutY="104.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalStartTimeTxt" layoutX="210.0" layoutY="104.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalDurationTxt" layoutX="17.0" layoutY="164.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalBaseTimeTxt" layoutX="210.0" layoutY="164.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalDurationTxt11" layoutX="17.0" layoutY="295.0" prefHeight="25.0" prefWidth="175.0" />
+            <TextField fx:id="signalDurationTxt111" layoutX="210.0" layoutY="295.0" prefHeight="25.0" prefWidth="175.0" />
          </children></Pane>
    </children>
 </GridPane>
