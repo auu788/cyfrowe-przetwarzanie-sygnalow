@@ -1,10 +1,6 @@
 package controller;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,16 +9,11 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
-import javax.xml.soap.Text;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 public class NewSignalWindow {
-    private enum VALIDATION_TYPE { TEXT, NUMBER };
+    private enum VALIDATION_TYPE { TEXT, INTEGER, DOUBLE }
+    private boolean isInputValid;
 
     @FXML
     private Label signalFillFactorLbl;
@@ -46,7 +37,7 @@ public class NewSignalWindow {
     private TextField signalNameTxt;
 
     @FXML
-    private ComboBox signalTypeComboBox;
+    private ComboBox<String> signalTypeComboBox;
 
     public void create() {
         try {
@@ -87,11 +78,11 @@ public class NewSignalWindow {
         signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
 
         setupValidation(signalNameTxt, VALIDATION_TYPE.TEXT);
-        setupValidation(signalAmplitudeTxt, VALIDATION_TYPE.NUMBER);
-        setupValidation(signalStartTimeTxt, VALIDATION_TYPE.NUMBER);
-        setupValidation(signalDurationTxt, VALIDATION_TYPE.NUMBER);
-        setupValidation(signalBaseTimeTxt, VALIDATION_TYPE.NUMBER);
-        setupValidation(signalFillFactorTxt, VALIDATION_TYPE.NUMBER);
+        setupValidation(signalAmplitudeTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalStartTimeTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalDurationTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalBaseTimeTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalFillFactorTxt, VALIDATION_TYPE.INTEGER);
     }
 
     @FXML
@@ -110,7 +101,14 @@ public class NewSignalWindow {
 
     @FXML
     private void generateSignal(ActionEvent e) {
-        if (signalNameTxt.getText().trim().isEmpty()) return;
+        isInputValid = true;
+        validate(signalNameTxt, VALIDATION_TYPE.TEXT);
+        validate(signalAmplitudeTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalStartTimeTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalDurationTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalBaseTimeTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalFillFactorTxt, VALIDATION_TYPE.INTEGER);
+        if (!isInputValid) return;
 
         MainAppController.signalItems.add(signalNameTxt.getText());
         final Node source = (Node) e.getSource();
@@ -135,17 +133,55 @@ public class NewSignalWindow {
     }
 
     private void validate(TextField textField, VALIDATION_TYPE validationType) {
-        if (textField.getText().trim().isEmpty()) {
-            textField.getStyleClass().add("error");
-        } else {
-            if (validationType == VALIDATION_TYPE.NUMBER) {
-                if (!textField.getText().matches("\\d*")) {
-                    textField.getStyleClass().add("error");
-                    return;
+        ObservableList<String> textFieldStyle = textField.getStyleClass();
+
+        if (textField.getText().trim().isEmpty() && !textFieldStyle.contains("error") && !textField.isDisabled()) {
+            textFieldStyle.add("error");
+        }
+        else {
+            switch (validationType) {
+                case INTEGER: {
+                    if (!isInteger(textField.getText())) {
+                        if (!textFieldStyle.contains("error") && !textField.isDisabled()) {
+                            textFieldStyle.add("error");
+                        }
+                    } else {
+                        textFieldStyle.remove("error");
+                        return;
+                    }
+                }
+                case TEXT: {
+                    if (!textField.getText().isEmpty()) {
+                        textFieldStyle.remove("error");
+                        return;
+                    }
                 }
             }
-
-            textField.getStyleClass().remove("error");
         }
+
+        if (!textField.isDisabled())
+            isInputValid = false;
+    }
+
+    private static boolean isDouble(String str) {
+        try {
+            double d = Double.parseDouble(str);
+        }
+        catch (NumberFormatException nfe) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isInteger(String str) {
+        try {
+            Integer.parseInt(str);
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
     }
 }
