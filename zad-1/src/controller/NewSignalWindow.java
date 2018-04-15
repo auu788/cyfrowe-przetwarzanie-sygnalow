@@ -78,7 +78,7 @@ public class NewSignalWindow {
         signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
 
         setupValidation(signalNameTxt, VALIDATION_TYPE.TEXT);
-        setupValidation(signalAmplitudeTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalAmplitudeTxt, VALIDATION_TYPE.DOUBLE);
         setupValidation(signalStartTimeTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(signalDurationTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(signalBaseTimeTxt, VALIDATION_TYPE.INTEGER);
@@ -103,7 +103,7 @@ public class NewSignalWindow {
     private void generateSignal(ActionEvent e) {
         isInputValid = true;
         validate(signalNameTxt, VALIDATION_TYPE.TEXT);
-        validate(signalAmplitudeTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalAmplitudeTxt, VALIDATION_TYPE.DOUBLE);
         validate(signalStartTimeTxt, VALIDATION_TYPE.INTEGER);
         validate(signalDurationTxt, VALIDATION_TYPE.INTEGER);
         validate(signalBaseTimeTxt, VALIDATION_TYPE.INTEGER);
@@ -133,22 +133,37 @@ public class NewSignalWindow {
     }
 
     private void validate(TextField textField, VALIDATION_TYPE validationType) {
+        if (textField.isDisabled())
+            return;
+
         ObservableList<String> textFieldStyle = textField.getStyleClass();
 
-        if (textField.getText().trim().isEmpty() && !textFieldStyle.contains("error") && !textField.isDisabled()) {
+        if (textField.getText().trim().isEmpty() && !textFieldStyle.contains("error")) {
             textFieldStyle.add("error");
         }
         else {
             switch (validationType) {
                 case INTEGER: {
                     if (!isInteger(textField.getText())) {
-                        if (!textFieldStyle.contains("error") && !textField.isDisabled()) {
+                        if (!textFieldStyle.contains("error")) {
                             textFieldStyle.add("error");
                         }
                     } else {
                         textFieldStyle.remove("error");
                         return;
                     }
+                    break;
+                }
+                case DOUBLE: {
+                    if (!isDouble(textField.getText())) {
+                        if (!textFieldStyle.contains("error")) {
+                            textFieldStyle.add("error");
+                        }
+                    } else {
+                        textFieldStyle.remove("error");
+                        return;
+                    }
+                    break;
                 }
                 case TEXT: {
                     if (!textField.getText().isEmpty()) {
@@ -159,13 +174,12 @@ public class NewSignalWindow {
             }
         }
 
-        if (!textField.isDisabled())
-            isInputValid = false;
+        isInputValid = false;
     }
 
     private static boolean isDouble(String str) {
         try {
-            double d = Double.parseDouble(str);
+            Double.parseDouble(str);
         }
         catch (NumberFormatException nfe) {
             return false;
