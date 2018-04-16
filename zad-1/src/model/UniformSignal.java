@@ -11,20 +11,16 @@ public class UniformSignal extends Signal {
         this.duration = duration;
         this.frequencySampling = frequencySampling;
 
-        this.generate();
+        this.generateSignal();
+        this.calcStats();
     }
 
     @Override
-    protected void generate() {
+    protected void generateSignal() {
         Random gen = new Random();
-        // duration * freqSampling
 
         for (int i = 0; i < duration * frequencySampling; i++) {
             this.signal.put(i, (gen.nextDouble() * 2 - 1) * amplitude);
-        }
-
-        for (int i = 0; i < this.signal.size() - 1; i++) {
-            System.out.println(this.signal.get(i));
         }
     }
 }
