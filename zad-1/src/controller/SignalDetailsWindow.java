@@ -9,27 +9,16 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.Signal;
 import model.UniformSignal;
+import model.Utils;
 
 import java.io.IOException;
 
-public class NewSignalWindow {
+public class SignalDetailsWindow {
     private enum VALIDATION_TYPE { TEXT, INTEGER, DOUBLE }
     private boolean isInputValid;
-
-    private ObservableList<String> signalTypes = FXCollections.observableArrayList(
-            "Szum o rozkładzie jednostajnym",
-            "Szum gaussowski",
-            "Sygnał sinusoidalny",
-            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-            "Sygnał sinusoidalny wyprostowany dwupołówkowo",
-            "Sygnał prostokątny",
-            "Sygnał prostokątny symetryczny",
-            "Sygnał trójkątny",
-            "Skok jednostkowy",
-            "Impuls jednostkowy",
-            "Szum impulsowy"
-    );
+    private Signal signal;
 
     @FXML private ComboBox<String> signalTypeComboBox;
     @FXML private Button generateBtn;
@@ -51,40 +40,24 @@ public class NewSignalWindow {
     @FXML private TextField jumpTimeTxt;
     @FXML private TextField amplitudeProbabilityTxt;
 
-    public void create() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("../view/NewSignalWindow.fxml"));
 
-            Scene scene = new Scene(fxmlLoader.load());
-            scene.getStylesheets().add("view/modena-dark.css");
-
-            Stage stage = new Stage();
-            stage.setResizable(false);
-            stage.setTitle("Utwórz nowy sygnał");
-            stage.setScene(scene);
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void edit(Signal signal) {
+        this.signal = signal;
     }
 
     @FXML
     private void initialize() {
-        signalTypeComboBox.setItems(signalTypes);
-        signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
+        signalTypeComboBox.setItems(Utils.signalTypes);
 
-        signalBaseIntervalTxt.setDisable(true);
-        signalBaseIntervalLbl.setDisable(true);
-        signalFillFactorTxt.setDisable(true);
-        signalFillFactorLbl.setDisable(true);
-        jumpNumTxt.setDisable(true);
-        jumpNumLbl.setDisable(true);
-        jumpTimeTxt.setDisable(true);
-        jumpTimeLbl.setDisable(true);
-        amplitudeProbabilityTxt.setDisable(true);
-        amplitudeProbabilityLbl.setDisable(true);
+        if (this.signal != null) { // Edit
+            signalTypeComboBox.setValue(signal.getSignalType());
+            populateDataToEdit();
+        } else {
+            signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
+        }
+
+
+        setupAvailableFields();
 
         setupValidation(signalNameTxt, VALIDATION_TYPE.TEXT);
         setupValidation(signalAmplitudeTxt, VALIDATION_TYPE.DOUBLE);
@@ -115,7 +88,6 @@ public class NewSignalWindow {
 
         createSignal();
 
-//        MainAppController.signalItems.add(signalNameTxt.getText());
         final Node source = (Node) e.getSource();
         final Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
@@ -130,9 +102,28 @@ public class NewSignalWindow {
 
     @FXML
     private void signalTypeChanged(ActionEvent e) {
+        setupAvailableFields();
+    }
+
+    private void populateDataToEdit() {
+        if (signal.getName() != null) signalNameTxt.setText(signal.getName());
+        if (signal.getAmplitude() != null) signalAmplitudeTxt.setText(String.valueOf(signal.getAmplitude()));
+        if (signal.getStartTime() != null) signalStartTimeTxt.setText(String.valueOf(signal.getStartTime()));
+        if (signal.getDuration() != null) signalDurationTxt.setText(String.valueOf(signal.getDuration()));
+        if (signal.getBaseInterval() != null) signalBaseIntervalTxt.setText(String.valueOf(signal.getBaseInterval()));
+        if (signal.getFrequencySampling() != null) frequencySamplingTxt.setText(String.valueOf(signal.getFrequencySampling()));
+        if (signal.getFillFactor() != null) signalFillFactorTxt.setText(String.valueOf(signal.getFillFactor()));
+        if (signal.getJumpNum() != null) jumpNumTxt.setText(String.valueOf(signal.getJumpNum()));
+        if (signal.getName() != null) jumpTimeTxt.setText(String.valueOf(signal.getJumpTime()));
+        if (signal.getJumpTime() != null) amplitudeProbabilityTxt.setText(String.valueOf(signal.getAmplitudeProbability()));
+    }
+
+    private void setupAvailableFields() {
         switch (signalTypeComboBox.getValue()) {
-            case "Sygnał prostokątny": { }
-            case "Sygnał prostkątny symetryczny": { }
+            case "Sygnał prostokątny": {
+            }
+            case "Sygnał prostkątny symetryczny": {
+            }
             case "Sygnał trójkątny": {
                 jumpNumTxt.getStyleClass().remove("error");
                 jumpTimeTxt.getStyleClass().remove("error");
@@ -204,8 +195,10 @@ public class NewSignalWindow {
                 amplitudeProbabilityLbl.setDisable(true);
                 break;
             }
-            case "Sygnał sinusoidalny": { }
-            case "Sygnał sinusoidalny wyprostowany jednopołówkowo": { }
+            case "Sygnał sinusoidalny": {
+            }
+            case "Sygnał sinusoidalny wyprostowany jednopołówkowo": {
+            }
             case "Sygnał sinusoidalny wyprostowany dwupołówkowo": {
                 signalFillFactorTxt.getStyleClass().remove("error");
                 jumpNumTxt.getStyleClass().remove("error");
@@ -247,6 +240,7 @@ public class NewSignalWindow {
     private void createSignal() {
         MainAppController.signalItems.add(
                 new UniformSignal(
+                        this.signalTypeComboBox.getValue(),
                         this.signalNameTxt.getText(),
                         Double.valueOf(this.signalAmplitudeTxt.getText()),
                         Integer.valueOf(this.signalStartTimeTxt.getText()),

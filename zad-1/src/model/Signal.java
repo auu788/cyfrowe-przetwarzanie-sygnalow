@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.TreeMap;
 
 public abstract class Signal {
+    protected String signalType;
     protected String name;
     protected Double amplitude;
     protected Integer startTime;
@@ -41,22 +42,19 @@ public abstract class Signal {
 
     protected abstract void generateSignal();
 
+    public String getName() { return name; }
     public Double getAvg() {
         return avg;
     }
-
     public Double getAbsoluteAvg() {
         return absoluteAvg;
     }
-
     public Double getAvgSignalPower() {
         return avgSignalPower;
     }
-
     public Double getVariance() {
         return variance;
     }
-
     public Double getRms() {
         return rms;
     }
@@ -79,5 +77,33 @@ public abstract class Signal {
 
     public Integer getDuration() {
         return duration;
+    }
+
+    public Double getAmplitude() {
+        return amplitude;
+    }
+
+    public Integer getBaseInterval() {
+        return null;
+    }
+
+    public Integer getFillFactor() {
+        return null;
+    }
+
+    public Integer getJumpNum() {
+        return null;
+    }
+
+    public Integer getJumpTime() {
+        return null;
+    }
+
+    public Double getAmplitudeProbability() {
+        return null;
+    }
+
+    public String getSignalType() {
+        return signalType;
     }
 }

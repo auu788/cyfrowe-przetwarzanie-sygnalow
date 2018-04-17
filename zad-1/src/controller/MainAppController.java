@@ -6,15 +6,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Signal;
+import model.Utils;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ public class MainAppController {
 //    @FXML NumberAxis lineXAxis;
 //    @FXML NumberAxis lineYAxis;
 
+    @FXML Label signalNameLbl;
     @FXML Label avgLbl;
     @FXML Label absoluteAvgLbl;
     @FXML Label avgSignalPowerLbl;
@@ -43,53 +47,42 @@ public class MainAppController {
 
     public void init(Stage stage) {
         this.stage = stage;
+    }
 
-        signalItems.addListener(
-                (ListChangeListener<Signal>) c -> {
-                    while (c.next()) {
-                        if (c.getAddedSize() > 0) noSignalLbl.setVisible(false);
-                        else noSignalLbl.setVisible(true);
-                    }
-                }
-        );
+    public void createSignalDetailsWindow(Signal signal) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/SignalDetailsWindow.fxml"));
+            SignalDetailsWindow signalDetailsWindow = new SignalDetailsWindow();
+            if (signal != null)
+                signalDetailsWindow.edit(signal);
+            fxmlLoader.setController(signalDetailsWindow);
+            Parent root = fxmlLoader.load();
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("view/modena-dark.css");
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.setTitle("Utwórz nowy sygnał");
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void initialize() {
         signalList.setItems(signalItems);
-
         bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
 
-        bucketsNumSlider.valueProperty().addListener(
-                (obs, oldValue, newValue) -> {
-                    bucketsNumSlider.setValue(newValue.intValue());
-                    bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
-
-                    if (signalList.getSelectionModel().getSelectedItem() != null)
-                        generateBarChart(signalList.getSelectionModel().getSelectedItem(), (int) bucketsNumSlider.getValue());
-                }
-        );
-
-        signalList.setOnMouseClicked(
-                event -> {
-                    Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
-
-                    avgLbl.setText(String.format("%.2f", selectedSignal.getAvg()));
-                    absoluteAvgLbl.setText(String.format("%.2f", selectedSignal.getAbsoluteAvg()));
-                    avgSignalPowerLbl.setText(String.format("%.2f", selectedSignal.getAvgSignalPower()));
-                    varianceLbl.setText(String.format("%.2f", selectedSignal.getVariance()));
-                    rmsLbl.setText(String.format("%.2f", selectedSignal.getRms()));
-
-                    generateLineChart(selectedSignal);
-                    generateBarChart(selectedSignal, (int) bucketsNumSlider.getValue());
-                }
-        );
+        setupListeners();
     }
 
     @FXML
     private void createSignal(ActionEvent e) {
-        NewSignalWindow newSignal = new NewSignalWindow();
-        newSignal.create();
+        createSignalDetailsWindow(null);
     }
 
     @FXML
@@ -136,7 +129,7 @@ public class MainAppController {
         barChart.getData().clear();
 
         BarChart.Series<String, Integer> series = new BarChart.Series<>();
-        Map<String, Integer> histogramData = getHistogramData(signal, binsNum);
+        Map<String, Integer> histogramData = Utils.getHistogramData(signal, binsNum);
 
         histogramData.forEach(
                 (k, v) -> series.getData().add(new BarChart.Data<String, Integer>(k, v))
@@ -147,26 +140,85 @@ public class MainAppController {
 
     }
 
-    public Map<String, Integer> getHistogramData(Signal signal, Integer binsNum) {
-        Map<String, Integer> histogramData = new LinkedHashMap<>();
-        double interval = (signal.getMaxValue() - signal.getMinValue()) / (double) binsNum;
+    private void setupListeners() {
+        bucketsNumSlider.valueProperty().addListener(
+                (obs, oldValue, newValue) -> {
+                    bucketsNumSlider.setValue(newValue.intValue());
+                    bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
 
-        int counter = 0;
-        Map<Integer, Double> values = signal.getData();
-
-        for(double i = signal.getMinValue(); i < signal.getMaxValue(); i += interval) {
-            for(int j = 0; j < values.size(); j++) {
-                if(values.get(j) >= i && values.get(j) < i + interval) {
-                    counter++;
+                    if (signalList.getSelectionModel().getSelectedItem() != null)
+                        generateBarChart(signalList.getSelectionModel().getSelectedItem(), (int) bucketsNumSlider.getValue());
                 }
-            }
-            int index = String.valueOf(i).indexOf('.');
+        );
 
-            histogramData.put(String.format("%.2f", i), counter);
-            counter = 0;
+        signalList.setOnMouseClicked(
+                event -> {
+                    if (signalList.getSelectionModel().getSelectedItem() == null) return;
+                    Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
+
+                    signalNameLbl.setText(selectedSignal.getName());
+                    avgLbl.setText(String.format("%.2f", selectedSignal.getAvg()));
+                    absoluteAvgLbl.setText(String.format("%.2f", selectedSignal.getAbsoluteAvg()));
+                    avgSignalPowerLbl.setText(String.format("%.2f", selectedSignal.getAvgSignalPower()));
+                    varianceLbl.setText(String.format("%.2f", selectedSignal.getVariance()));
+                    rmsLbl.setText(String.format("%.2f", selectedSignal.getRms()));
+
+                    generateLineChart(selectedSignal);
+                    generateBarChart(selectedSignal, (int) bucketsNumSlider.getValue());
+                }
+        );
+    }
+
+    @FXML
+    private void removeSignal(ActionEvent e) {
+        signalItems.remove(signalList.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML
+    private void editSignal(ActionEvent e) {
+        createSignalDetailsWindow(signalList.getSelectionModel().getSelectedItem());
+    }
+
+    private void createSignalChooseWindow(String operation) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/SignalChooser.fxml"));
+            SignalChooser signalChooser = new SignalChooser();
+            signalChooser.setOperation(operation);
+
+            fxmlLoader.setController(signalChooser);
+            Parent root = fxmlLoader.load();
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("view/modena-dark.css");
+
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.setTitle("Wybierz sygnał");
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+    @FXML
+    private void addSignal(ActionEvent e) {
+        createSignalChooseWindow("Dodaj");
+    }
 
-        return histogramData;
+    @FXML
+    private void substractSignal(ActionEvent e) {
+        createSignalChooseWindow("Odejmij");
+    }
+
+    @FXML
+    private void multiplySignal(ActionEvent e) {
+        createSignalChooseWindow("Pomnóż");
+    }
+
+    @FXML
+    private void divideSignal(ActionEvent e) {
+        createSignalChooseWindow("Podziel");
     }
 
 }

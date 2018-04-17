@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="346.0" prefWidth="188.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ListView fx:id="chooserSignalsList" prefHeight="286.0" prefWidth="195.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" />
+      <Button fx:id="chooseBtn" layoutX="14.0" layoutY="307.0" mnemonicParsing="false" onAction="#choose" prefWidth="60.0" text="Wybierz" />
+      <Button layoutX="114.0" layoutY="307.0" mnemonicParsing="false" onAction="#cancel" prefWidth="60.0" text="Anuluj" />
+   </children>
+</Pane>

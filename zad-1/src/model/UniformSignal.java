@@ -4,7 +4,8 @@ import java.util.Random;
 
 // Szum o rozkładzie jednostajnym
 public class UniformSignal extends Signal {
-    public UniformSignal(String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
+    public UniformSignal(String signalType, String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
+        this.signalType = signalType;
         this.name = name;
         this.amplitude = amplitude;
         this.startTime = startTime;
