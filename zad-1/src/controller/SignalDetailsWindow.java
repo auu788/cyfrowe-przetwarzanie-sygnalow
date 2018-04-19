@@ -13,12 +13,11 @@ import model.Signal;
 import model.UniformSignal;
 import model.Utils;
 
-import java.io.IOException;
-
 public class SignalDetailsWindow {
     private enum VALIDATION_TYPE { TEXT, INTEGER, DOUBLE }
     private boolean isInputValid;
     private Signal signal;
+    private boolean isEdited;
 
     @FXML private ComboBox<String> signalTypeComboBox;
     @FXML private Button generateBtn;
@@ -43,13 +42,15 @@ public class SignalDetailsWindow {
 
     public void edit(Signal signal) {
         this.signal = signal;
+        this.isEdited = true;
     }
 
     @FXML
     private void initialize() {
         signalTypeComboBox.setItems(Utils.signalTypes);
 
-        if (this.signal != null) { // Edit
+        if (isEdited) { // Edit
+            generateBtn.setText("Zatwierdź edycję");
             signalTypeComboBox.setValue(signal.getSignalType());
             populateDataToEdit();
         } else {
@@ -86,12 +87,15 @@ public class SignalDetailsWindow {
         validate(amplitudeProbabilityTxt, VALIDATION_TYPE.DOUBLE);
         if (!isInputValid) return;
 
-        createSignal();
+        if (isEdited) editSignal();
+        else createSignal();
 
         final Node source = (Node) e.getSource();
         final Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
+
+
 
     @FXML
     private void cancel(ActionEvent e) {
@@ -114,8 +118,8 @@ public class SignalDetailsWindow {
         if (signal.getFrequencySampling() != null) frequencySamplingTxt.setText(String.valueOf(signal.getFrequencySampling()));
         if (signal.getFillFactor() != null) signalFillFactorTxt.setText(String.valueOf(signal.getFillFactor()));
         if (signal.getJumpNum() != null) jumpNumTxt.setText(String.valueOf(signal.getJumpNum()));
-        if (signal.getName() != null) jumpTimeTxt.setText(String.valueOf(signal.getJumpTime()));
-        if (signal.getJumpTime() != null) amplitudeProbabilityTxt.setText(String.valueOf(signal.getAmplitudeProbability()));
+        if (signal.getJumpTime() != null) jumpTimeTxt.setText(String.valueOf(signal.getJumpTime()));
+        if (signal.getAmplitudeProbability() != null) amplitudeProbabilityTxt.setText(String.valueOf(signal.getAmplitudeProbability()));
     }
 
     private void setupAvailableFields() {
@@ -235,6 +239,18 @@ public class SignalDetailsWindow {
                 amplitudeProbabilityLbl.setDisable(true);
             }
         }
+    }
+
+    private void editSignal() {
+//        this.signal.setName(this.signalNameTxt.getText());
+//        this.signal.setSignalType(this.signalTypeComboBox.getValue());
+//        this.signal.setAmplitude(Double.valueOf(this.signalAmplitudeTxt.getText()));
+//        this.signal.setStartTime(Integer.valueOf(this.signalStartTimeTxt.getText()));
+//        this.signal.setDuration(Integer.valueOf(this.signalDurationTxt.getText()));
+//        this.signal.setFrequencySampling(Double.valueOf(this.frequencySamplingTxt.getText()));
+
+        MainAppController.signalItems.remove(this.signal);
+        createSignal();
     }
 
     private void createSignal() {

@@ -106,4 +106,48 @@ public abstract class Signal {
     public String getSignalType() {
         return signalType;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStartTime(Integer startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setFrequencySampling(Double frequencySampling) {
+        this.frequencySampling = frequencySampling;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public void setAmplitude(Double amplitude) {
+        this.amplitude = amplitude;
+    }
+
+//    public void setBaseInterval(Integer baseInterval) {
+//        this.baseInterval = baseInterval;
+//    }
+//
+//    public void setFillFactor(Integer fillFactor) {
+//        this.fillFactor = fillFactor;
+//    }
+//
+//    public void setJumpNum(Integer jumpNum) {
+//        this.jumpNum = jumpNum;
+//    }
+//
+//    public void setJumpTime(Integer jumpTime) {
+//        this.jumpTime = jumpTime;
+//    }
+//
+//    public void setAmplitudeProbability(Double amplitudeProbability) {
+//        this.amplitudeProbability = amplitudeProbability;
+//    }
+
+    public void setSignalType(String signalType) {
+        this.signalType = signalType;
+    }
 }

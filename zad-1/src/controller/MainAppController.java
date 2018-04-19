@@ -18,6 +18,7 @@ import model.Signal;
 import model.Utils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,8 +27,14 @@ public class MainAppController {
 
     private Stage stage;
 
-//    @FXML NumberAxis lineXAxis;
-//    @FXML NumberAxis lineYAxis;
+    @FXML NumberAxis lineXAxis;
+    @FXML NumberAxis lineYAxis;
+
+    @FXML Label amplitudeLbl;
+    @FXML Label startTimeLbl;
+    @FXML Label durationLbl;
+    @FXML Label baseIntervalLbl;
+    @FXML Label frequencySamplingLbl;
 
     @FXML Label signalNameLbl;
     @FXML Label avgLbl;
@@ -39,7 +46,7 @@ public class MainAppController {
     @FXML Slider bucketsNumSlider;
     @FXML Label bucketsNumLbl;
 
-    @FXML LineChart<String, Double> lineChart;
+    @FXML ScatterChart<Double, Double> scatterChart;
     @FXML BarChart<String, Integer> barChart;
 
     @FXML ListView<Signal> signalList;
@@ -53,8 +60,13 @@ public class MainAppController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../view/SignalDetailsWindow.fxml"));
             SignalDetailsWindow signalDetailsWindow = new SignalDetailsWindow();
-            if (signal != null)
+            String titleText = "Utwórz nowy sygnał";
+
+            if (signal != null) {
                 signalDetailsWindow.edit(signal);
+                titleText = "Edytuj sygnał";
+            }
+
             fxmlLoader.setController(signalDetailsWindow);
             Parent root = fxmlLoader.load();
 
@@ -63,7 +75,7 @@ public class MainAppController {
 
             Stage stage = new Stage();
             stage.setResizable(false);
-            stage.setTitle("Utwórz nowy sygnał");
+            stage.setTitle(titleText);
             stage.setScene(scene);
             stage.show();
 
@@ -76,6 +88,15 @@ public class MainAppController {
     private void initialize() {
         signalList.setItems(signalItems);
         bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
+
+        lineXAxis.setAutoRanging(false);
+        lineXAxis.setLabel("t[s]");
+
+        lineYAxis.setAutoRanging(false);
+        lineYAxis.setLabel("A");
+
+        barChart.setLegendVisible(false);
+        scatterChart.setLegendVisible(false);
 
         setupListeners();
     }
@@ -97,32 +118,33 @@ public class MainAppController {
     }
 
     private void generateLineChart(Signal signal) {
-        lineChart.getData().clear();
+        scatterChart.getData().clear();
 
         Integer startTime = signal.getStartTime();
         Double frequencySampling = signal.getFrequencySampling();
         Integer duration = signal.getDuration();
         int minValue = signal.getMinValue();
         int maxValue = signal.getMaxValue();
+        double ampltiude = signal.getAmplitude();
         Map<Integer, Double> signalData = signal.getData();
 
-//        lineXAxis.setLowerBound(startTime);
-//        lineXAxis.setUpperBound(startTime + duration);
-//
-//        lineYAxis.setLowerBound(minValue);
-//        lineYAxis.setUpperBound(maxValue);
+        lineXAxis.setLowerBound(startTime - 0.5);
+        lineXAxis.setUpperBound(startTime + duration + 0.5);
 
-        XYChart.Series<String, Double> series = new XYChart.Series<>();
+        lineYAxis.setLowerBound(minValue - 0.3 * ampltiude);
+        lineYAxis.setUpperBound(maxValue + 0.3 * ampltiude);
+
+        XYChart.Series<Double, Double> series = new XYChart.Series<>();
 
         for (int i = 0; i < signal.getData().size(); i++) {
-            XYChart.Data<String, Double> d = new XYChart.Data<String, Double>(
-                    String.format("%.2f", (i / frequencySampling) + startTime), signalData.get(i));
+            XYChart.Data<Double, Double> d = new XYChart.Data<Double, Double>(
+                    (i / frequencySampling) + startTime, signalData.get(i));
 
             series.getData().add(d);
         }
 
-        lineChart.setTitle("Wykres liniowy");
-        lineChart.getData().add(series);
+        scatterChart.setTitle("Wykres liniowy");
+        scatterChart.getData().add(series);
     }
 
     private void generateBarChart(Signal signal, Integer binsNum) {
@@ -137,7 +159,6 @@ public class MainAppController {
 
         barChart.setTitle("Histogram");
         barChart.getData().add(series);
-
     }
 
     private void setupListeners() {
@@ -155,18 +176,27 @@ public class MainAppController {
                 event -> {
                     if (signalList.getSelectionModel().getSelectedItem() == null) return;
                     Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
-
-                    signalNameLbl.setText(selectedSignal.getName());
-                    avgLbl.setText(String.format("%.2f", selectedSignal.getAvg()));
-                    absoluteAvgLbl.setText(String.format("%.2f", selectedSignal.getAbsoluteAvg()));
-                    avgSignalPowerLbl.setText(String.format("%.2f", selectedSignal.getAvgSignalPower()));
-                    varianceLbl.setText(String.format("%.2f", selectedSignal.getVariance()));
-                    rmsLbl.setText(String.format("%.2f", selectedSignal.getRms()));
+                    setSignalInfo(selectedSignal);
 
                     generateLineChart(selectedSignal);
                     generateBarChart(selectedSignal, (int) bucketsNumSlider.getValue());
                 }
         );
+    }
+
+    private void setSignalInfo(Signal selectedSignal) {
+        signalNameLbl.setText(selectedSignal.getName());
+        avgLbl.setText(String.format("%.2f", selectedSignal.getAvg()));
+        absoluteAvgLbl.setText(String.format("%.2f", selectedSignal.getAbsoluteAvg()));
+        avgSignalPowerLbl.setText(String.format("%.2f", selectedSignal.getAvgSignalPower()));
+        varianceLbl.setText(String.format("%.2f", selectedSignal.getVariance()));
+        rmsLbl.setText(String.format("%.2f", selectedSignal.getRms()));
+
+        amplitudeLbl.setText(String.valueOf(selectedSignal.getAmplitude()));
+        startTimeLbl.setText(String.valueOf(selectedSignal.getStartTime()));
+        durationLbl.setText(String.valueOf(selectedSignal.getDuration()));
+        baseIntervalLbl.setText(String.valueOf(selectedSignal.getBaseInterval()));
+        frequencySamplingLbl.setText(String.valueOf(selectedSignal.getFrequencySampling()));
     }
 
     @FXML
@@ -176,7 +206,10 @@ public class MainAppController {
 
     @FXML
     private void editSignal(ActionEvent e) {
-        createSignalDetailsWindow(signalList.getSelectionModel().getSelectedItem());
+        Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
+
+        if (selectedSignal != null)
+            createSignalDetailsWindow(signalList.getSelectionModel().getSelectedItem());
     }
 
     private void createSignalChooseWindow(String operation) {
