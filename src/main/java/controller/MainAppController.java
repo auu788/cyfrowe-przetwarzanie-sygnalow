@@ -41,6 +41,7 @@ public class MainAppController {
     @FXML Label frequencySamplingLbl;
 
     @FXML Label signalNameLbl;
+    @FXML Label signalTypeLbl;
     @FXML Label avgLbl;
     @FXML Label absoluteAvgLbl;
     @FXML Label avgSignalPowerLbl;
@@ -146,7 +147,6 @@ public class MainAppController {
         if (selectedSignal != null)
             createSignalDetailsWindow(signalList.getSelectionModel().getSelectedItem());
     }
-
 
     @FXML
     private void addSignal(ActionEvent e) {
@@ -289,6 +289,7 @@ public class MainAppController {
 
     private void setSignalInfo(Signal selectedSignal) {
         signalNameLbl.setText(selectedSignal.getName());
+        signalTypeLbl.setText(selectedSignal.getSignalType());
         avgLbl.setText(String.format("%.2f", selectedSignal.getAvg()));
         absoluteAvgLbl.setText(String.format("%.2f", selectedSignal.getAbsoluteAvg()));
         avgSignalPowerLbl.setText(String.format("%.2f", selectedSignal.getAvgSignalPower()));
@@ -298,12 +299,17 @@ public class MainAppController {
         amplitudeLbl.setText(String.valueOf(selectedSignal.getAmplitude()));
         startTimeLbl.setText(String.valueOf(selectedSignal.getStartTime()));
         durationLbl.setText(String.valueOf(selectedSignal.getDuration()));
-        baseIntervalLbl.setText(String.valueOf(selectedSignal.getBaseInterval()));
+        if (selectedSignal.getBaseInterval() != null) {
+            baseIntervalLbl.setText(String.valueOf(selectedSignal.getBaseInterval()));
+        } else {
+            baseIntervalLbl.setText("");
+        }
         frequencySamplingLbl.setText(String.valueOf(selectedSignal.getFrequencySampling()));
     }
 
     private void removeSignalInfo() {
         signalNameLbl.setText("");
+        signalTypeLbl.setText("");
         avgLbl.setText("");
         absoluteAvgLbl.setText("");
         avgSignalPowerLbl.setText("");

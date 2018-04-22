@@ -14,9 +14,12 @@ public class SignalDeserializer implements JsonDeserializer<Signal> {
         JsonElement signalType = jsonObject.get("signalType");
         if (signalType != null) {
             switch (signalType.getAsString()) {
-                case "Szum o rozkładzie jednostajnym":
-                    return context.deserialize(jsonObject,
-                            UniformSignal.class);
+                case "Szum o rozkładzie jednostajnym": {
+                    return context.deserialize(jsonObject, UniformSignal.class);
+                }
+                case "Szum gaussowski": {
+                    return context.deserialize(jsonObject, GaussianNoise.class);
+                }
             }
         }
         return null;

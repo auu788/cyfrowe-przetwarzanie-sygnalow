@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.GaussianNoise;
 import model.Signal;
 import model.UniformSignal;
 import model.Utils;
@@ -51,6 +52,7 @@ public class SignalDetailsWindow {
 
         if (isEdited) { // Edit
             generateBtn.setText("Zatwierdź edycję");
+            System.out.println(signal.getSignalType());
             signalTypeComboBox.setValue(signal.getSignalType());
             populateDataToEdit();
         } else {
@@ -254,14 +256,30 @@ public class SignalDetailsWindow {
     }
 
     private void createSignal() {
-        MainAppController.signalItems.add(
-                new UniformSignal(
-                        this.signalTypeComboBox.getValue(),
-                        this.signalNameTxt.getText(),
-                        Double.valueOf(this.signalAmplitudeTxt.getText()),
-                        Integer.valueOf(this.signalStartTimeTxt.getText()),
-                        Integer.valueOf(this.signalDurationTxt.getText()),
-                        Double.valueOf(this.frequencySamplingTxt.getText())));
+        switch (signalTypeComboBox.getValue()) {
+            case "Szum o rozkładzie jednostajnym": {
+                MainAppController.signalItems.add(
+                        new UniformSignal(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText())));
+                break;
+            }
+            case "Szum gaussowski": {
+                MainAppController.signalItems.add(
+                        new GaussianNoise(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText())));
+                break;
+            }
+        }
     }
 
     private void setupValidation(TextField textField, VALIDATION_TYPE validationType) {
