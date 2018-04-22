@@ -6,22 +6,36 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Utils {
+    public static final String UNIFORM_NOISE            = "Szum o rozkładzie jednostajnym";
+    public static final String GAUSSIAN_NOISE           = "Szum gaussowski";
+    public static final String SINE_SIGNAL              = "Sygnał sinusoidalny";
+    public static final String ONE_HALF_SINE_SIGNAL     = "Sygnał sinusoidalny wyprostowany jednopołówkowo";
+    public static final String TWO_HALF_SINE_SIGNAL     = "Sygnał sinusoidalny wyprostowany dwupołówkowo";
+    public static final String RECT_SIGNAL              = "Sygnał prostokątny";
+    public static final String SYMMETRIC_RECT_SIGNAL    = "Sygnał prostokątny symetryczny";
+    public static final String TRIANGLE_SIGNAL          = "Sygnał trójkątny";
+    public static final String UNIT_JUMP_SIGNAL         = "Skok jednostkowy";
+    public static final String UNIT_PULSE               = "Impuls jednostkowy";
+    public static final String PULSE_NOISE              = "Szum impulsowy";
+
     public static ObservableList<String> signalTypes = FXCollections.observableArrayList(
-            "Szum o rozkładzie jednostajnym",
-            "Szum gaussowski",
-            "Sygnał sinusoidalny",
-            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-            "Sygnał sinusoidalny wyprostowany dwupołówkowo",
-            "Sygnał prostokątny",
-            "Sygnał prostokątny symetryczny",
-            "Sygnał trójkątny",
-            "Skok jednostkowy",
-            "Impuls jednostkowy",
-            "Szum impulsowy"
+            UNIFORM_NOISE,
+            GAUSSIAN_NOISE,
+            SINE_SIGNAL,
+            ONE_HALF_SINE_SIGNAL,
+            TWO_HALF_SINE_SIGNAL,
+            RECT_SIGNAL,
+            SYMMETRIC_RECT_SIGNAL,
+            TRIANGLE_SIGNAL,
+            UNIT_JUMP_SIGNAL,
+            UNIT_PULSE,
+            PULSE_NOISE
     );
 
     public static Map<String, Integer> getHistogramData(Signal signal, Integer binsNum) {
@@ -29,8 +43,11 @@ public class Utils {
         double interval = (signal.getMaxValue() - signal.getMinValue()) / (double) binsNum;
 
         int counter = 0;
-        Map<Integer, Double> values = signal.getData();
+        List<Double> values = new ArrayList<>(signal.getData().values());
 
+        for (double i = signal.getMinValue(); i < signal.getMaxValue(); i += interval) {
+
+        }
         for(double i = signal.getMinValue(); i < signal.getMaxValue(); i += interval) {
             for(int j = 0; j < values.size(); j++) {
                 if(values.get(j) >= i && values.get(j) < i + interval) {

@@ -1,9 +1,11 @@
-package model;
+package model.signal;
+
+import model.Signal;
 
 import java.util.Random;
 
-public class GaussianNoise extends Signal {
-    public GaussianNoise(String signalType, String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
+public class Gaussian extends Signal {
+    public Gaussian(String signalType, String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
         this.signalType = signalType;
         this.name = name;
         this.amplitude = amplitude;
@@ -19,8 +21,10 @@ public class GaussianNoise extends Signal {
     protected void generateSignal() {
         Random gen = new Random();
 
-        for(int i = 0; i < duration * frequencySampling; i++) {
-            this.signal.put(i, gen.nextGaussian() * 1);
+        double i = startTime;
+        while (i < startTime + duration) {
+            this.signal.put(i, (gen.nextGaussian() * 1));
+            i += 1 / frequencySampling;
         }
     }
 }

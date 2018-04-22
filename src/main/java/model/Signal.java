@@ -10,7 +10,12 @@ public abstract class Signal {
     protected Integer duration;
     protected Double frequencySampling;
 
-    protected TreeMap<Integer, Double> signal = new TreeMap<>();
+    protected Integer baseInterval;
+    protected Double fillFactor;
+    protected Integer jumpTime;
+    protected Double amplitudeProbability;
+
+    protected TreeMap<Double, Double> signal = new TreeMap<>();
 
     protected Double avg;               // średnia
     protected Double absoluteAvg;       // średnia bezwzględna
@@ -25,7 +30,7 @@ public abstract class Signal {
         return name;
     }
 
-    public TreeMap<Integer, Double> getData() {
+    public TreeMap<Double, Double> getData() {
         return signal;
     }
 
@@ -82,7 +87,7 @@ public abstract class Signal {
     }
 
     public Integer getBaseInterval() {
-        return null;
+        return baseInterval;
     }
 
     public Integer getFillFactor() {
@@ -103,26 +108,6 @@ public abstract class Signal {
 
     public String getSignalType() {
         return signalType;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStartTime(Integer startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setFrequencySampling(Double frequencySampling) {
-        this.frequencySampling = frequencySampling;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public void setAmplitude(Double amplitude) {
-        this.amplitude = amplitude;
     }
 
 //    public void setBaseInterval(Integer baseInterval) {

@@ -1,10 +1,12 @@
-package model;
+package model.signal;
+
+import model.Signal;
 
 import java.util.Random;
 
 // Szum o rozkładzie jednostajnym
-public class UniformSignal extends Signal {
-    public UniformSignal(String signalType, String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
+public class Uniform extends Signal {
+    public Uniform(String signalType, String name, Double amplitude, Integer startTime, Integer duration, Double frequencySampling) {
         this.signalType = signalType;
         this.name = name;
         this.amplitude = amplitude;
@@ -20,8 +22,12 @@ public class UniformSignal extends Signal {
     protected void generateSignal() {
         Random gen = new Random();
 
-        for (int i = 0; i < duration * frequencySampling; i++) {
+        double i = startTime;
+        while (i < startTime + duration) {
             this.signal.put(i, (gen.nextDouble() * 2 - 1) * amplitude);
+            i += 1 / frequencySampling;
         }
+
+        System.out.println(signal);
     }
 }

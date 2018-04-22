@@ -1,17 +1,13 @@
 package controller;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import model.GaussianNoise;
+import model.signal.*;
 import model.Signal;
-import model.UniformSignal;
 import model.Utils;
 
 public class SignalDetailsWindow {
@@ -56,7 +52,7 @@ public class SignalDetailsWindow {
             signalTypeComboBox.setValue(signal.getSignalType());
             populateDataToEdit();
         } else {
-            signalTypeComboBox.setValue("Szum o rozkładzie jednostajnym");
+            signalTypeComboBox.setValue(Utils.UNIFORM_NOISE);
         }
 
 
@@ -126,11 +122,11 @@ public class SignalDetailsWindow {
 
     private void setupAvailableFields() {
         switch (signalTypeComboBox.getValue()) {
-            case "Sygnał prostokątny": {
+            case Utils.RECT_SIGNAL: {
             }
-            case "Sygnał prostkątny symetryczny": {
+            case Utils.SYMMETRIC_RECT_SIGNAL: {
             }
-            case "Sygnał trójkątny": {
+            case Utils.TRIANGLE_SIGNAL: {
                 jumpNumTxt.getStyleClass().remove("error");
                 jumpTimeTxt.getStyleClass().remove("error");
                 amplitudeProbabilityTxt.getStyleClass().remove("error");
@@ -147,7 +143,7 @@ public class SignalDetailsWindow {
                 amplitudeProbabilityLbl.setDisable(true);
                 break;
             }
-            case "Impuls jednostkowy": {
+            case Utils.UNIT_PULSE: {
                 signalFillFactorTxt.getStyleClass().remove("error");
                 jumpTimeTxt.getStyleClass().remove("error");
                 amplitudeProbabilityTxt.getStyleClass().remove("error");
@@ -165,7 +161,7 @@ public class SignalDetailsWindow {
                 amplitudeProbabilityLbl.setDisable(true);
                 break;
             }
-            case "Szum impulsowy": {
+            case Utils.PULSE_NOISE: {
                 signalFillFactorTxt.getStyleClass().remove("error");
                 jumpNumTxt.getStyleClass().remove("error");
                 jumpTimeTxt.getStyleClass().remove("error");
@@ -183,7 +179,7 @@ public class SignalDetailsWindow {
                 amplitudeProbabilityLbl.setDisable(false);
                 break;
             }
-            case "Skok jednostkowy": {
+            case Utils.UNIT_JUMP_SIGNAL: {
                 signalFillFactorTxt.getStyleClass().remove("error");
                 jumpNumTxt.getStyleClass().remove("error");
                 amplitudeProbabilityTxt.getStyleClass().remove("error");
@@ -201,11 +197,11 @@ public class SignalDetailsWindow {
                 amplitudeProbabilityLbl.setDisable(true);
                 break;
             }
-            case "Sygnał sinusoidalny": {
+            case Utils.SINE_SIGNAL: {
             }
-            case "Sygnał sinusoidalny wyprostowany jednopołówkowo": {
+            case Utils.ONE_HALF_SINE_SIGNAL: {
             }
-            case "Sygnał sinusoidalny wyprostowany dwupołówkowo": {
+            case Utils.TWO_HALF_SINE_SIGNAL: {
                 signalFillFactorTxt.getStyleClass().remove("error");
                 jumpNumTxt.getStyleClass().remove("error");
                 jumpTimeTxt.getStyleClass().remove("error");
@@ -257,9 +253,9 @@ public class SignalDetailsWindow {
 
     private void createSignal() {
         switch (signalTypeComboBox.getValue()) {
-            case "Szum o rozkładzie jednostajnym": {
+            case Utils.UNIFORM_NOISE: {
                 MainAppController.signalItems.add(
-                        new UniformSignal(
+                        new Uniform(
                                 this.signalTypeComboBox.getValue(),
                                 this.signalNameTxt.getText(),
                                 Double.valueOf(this.signalAmplitudeTxt.getText()),
@@ -268,15 +264,114 @@ public class SignalDetailsWindow {
                                 Double.valueOf(this.frequencySamplingTxt.getText())));
                 break;
             }
-            case "Szum gaussowski": {
+            case Utils.GAUSSIAN_NOISE: {
                 MainAppController.signalItems.add(
-                        new GaussianNoise(
+                        new Gaussian(
                                 this.signalTypeComboBox.getValue(),
                                 this.signalNameTxt.getText(),
                                 Double.valueOf(this.signalAmplitudeTxt.getText()),
                                 Integer.valueOf(this.signalStartTimeTxt.getText()),
                                 Integer.valueOf(this.signalDurationTxt.getText()),
                                 Double.valueOf(this.frequencySamplingTxt.getText())));
+                break;
+            }
+            case Utils.SINE_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new Sinusoidal(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText())));
+                break;
+            }
+            case Utils.ONE_HALF_SINE_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new SinusoidalOneHalf(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText())));
+                break;
+            }
+            case Utils.TWO_HALF_SINE_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new SinusoidalTwoHalf(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText())));
+                break;
+            }
+            case Utils.RECT_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new Rectangular(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText()),
+                                Double.valueOf(this.signalFillFactorTxt.getText())));
+                break;
+            }
+            case Utils.SYMMETRIC_RECT_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new RectangularSymmetric(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText()),
+                                Double.valueOf(this.signalFillFactorTxt.getText())));
+                break;
+            }
+            case Utils.TRIANGLE_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new Triangular(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.signalBaseIntervalTxt.getText()),
+                                Double.valueOf(this.signalFillFactorTxt.getText())));
+                break;
+            }
+            case Utils.UNIT_JUMP_SIGNAL: {
+                MainAppController.signalItems.add(
+                        new UnitJump(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Integer.valueOf(this.jumpTimeTxt.getText())));
+                break;
+            }
+            case Utils.PULSE_NOISE: {
+                MainAppController.signalItems.add(
+                        new Pulse(
+                                this.signalTypeComboBox.getValue(),
+                                this.signalNameTxt.getText(),
+                                Double.valueOf(this.signalAmplitudeTxt.getText()),
+                                Integer.valueOf(this.signalStartTimeTxt.getText()),
+                                Integer.valueOf(this.signalDurationTxt.getText()),
+                                Double.valueOf(this.frequencySamplingTxt.getText()),
+                                Double.valueOf(this.amplitudeProbabilityTxt.getText())));
                 break;
             }
         }

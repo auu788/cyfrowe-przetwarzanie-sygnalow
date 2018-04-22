@@ -15,15 +15,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Signal;
 import model.SignalDeserializer;
-import model.UniformSignal;
 import model.Utils;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
 
 public class MainAppController {
@@ -201,7 +198,7 @@ public class MainAppController {
         int minValue = signal.getMinValue();
         int maxValue = signal.getMaxValue();
         double ampltiude = signal.getAmplitude();
-        Map<Integer, Double> signalData = signal.getData();
+        Map<Double, Double> signalData = signal.getData();
 
         lineXAxis.setLowerBound(startTime - 0.5);
         lineXAxis.setUpperBound(startTime + duration + 0.5);
@@ -211,12 +208,12 @@ public class MainAppController {
 
         XYChart.Series<Double, Double> series = new XYChart.Series<>();
 
-        for (int i = 0; i < signal.getData().size(); i++) {
-            XYChart.Data<Double, Double> d = new XYChart.Data<Double, Double>(
-                    (i / frequencySampling) + startTime, signalData.get(i));
-
-            series.getData().add(d);
-        }
+        XYChart.Data<Double, Double> d;
+        signalData.forEach(
+                (k, v) -> {
+                    series.getData().add(new XYChart.Data<>(k, v));
+                }
+        );
 
         scatterChart.setTitle("Wykres liniowy");
         scatterChart.getData().add(series);
