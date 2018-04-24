@@ -90,8 +90,8 @@ public abstract class Signal {
         return baseInterval;
     }
 
-    public Integer getFillFactor() {
-        return null;
+    public Double getFillFactor() {
+        return fillFactor;
     }
 
     public Integer getJumpNum() {
@@ -99,17 +99,20 @@ public abstract class Signal {
     }
 
     public Integer getJumpTime() {
-        return null;
+        return jumpTime;
     }
 
     public Double getAmplitudeProbability() {
-        return null;
+        return amplitudeProbability;
     }
 
     public String getSignalType() {
         return signalType;
     }
 
+    public void setData(TreeMap<Double, Double> data) {
+        this.signal = data;
+    }
 //    public void setBaseInterval(Integer baseInterval) {
 //        this.baseInterval = baseInterval;
 //    }

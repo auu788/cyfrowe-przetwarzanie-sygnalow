@@ -9,7 +9,9 @@ public class Rectangular extends Signal {
         this.name = name;
         this.amplitude = amplitude;
         this.startTime = startTime;
-        this.duration = (duration / baseInterval) * baseInterval;
+//        this.duration = (duration / baseInterval) * baseInterval;
+        this.startTime = startTime;
+        this.duration = duration;
         this.frequencySampling = frequencySampling;
         this.baseInterval = baseInterval;
         this.fillFactor = fillFactor;
@@ -28,7 +30,7 @@ public class Rectangular extends Signal {
 
         double i = startTime;
         int counter = 0;
-        while (i < duration + startTime) {
+        while (i < startTime + duration) {
             if (counter % interval == 0 && counter != 0) {
                 k++;
             }
@@ -43,7 +45,7 @@ public class Rectangular extends Signal {
                 this.signal.put(i, 0.0);
             }
             i += 1 / frequencySampling;
-            System.out.println(this.signal);
+            counter++;
         }
     }
 }

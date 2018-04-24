@@ -3,13 +3,13 @@ package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
+import model.signal.Sinusoidal;
+import org.decimal4j.util.DoubleRounder;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class Utils {
     public static final String UNIFORM_NOISE            = "Szum o rozkładzie jednostajnym";
@@ -24,6 +24,12 @@ public class Utils {
     public static final String UNIT_PULSE               = "Impuls jednostkowy";
     public static final String PULSE_NOISE              = "Szum impulsowy";
 
+    public static final String ADD_OPPERATION           = "Dodaj";
+    public static final String SUB_OPERATION            = "Odejmij";
+    public static final String MUL_OPERATION            = "Pomnóż";
+    public static final String DIV_OPERATION            = "Podziel";
+
+    private static final DecimalFormat df2 = new DecimalFormat(".##");
     public static ObservableList<String> signalTypes = FXCollections.observableArrayList(
             UNIFORM_NOISE,
             GAUSSIAN_NOISE,
@@ -62,19 +68,116 @@ public class Utils {
         return histogramData;
     }
 
-    public Signal addSignals(Signal s1, Signal s2) {
-        return s1;
+    public static Signal addSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+        System.out.println("--------");
+        s2.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    if (map.get(DoubleRounder.round(k, 1)) != null) {
+                        map.put(DoubleRounder.round(k, 1), v + map.get(DoubleRounder.round(k, 1)));
+                    }
+                    else map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+
+        map.forEach((k, v) -> {
+            System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+        });
+
+        String name = s1.getName() + " + " + s2.getName();
+        Double frequencySampling = s1.getFrequencySampling();
+
+        return new OperationalSignal(name, frequencySampling, map);
     }
 
-    public Signal subtractSignals(Signal s1, Signal s2) {
-        return s1;
+    public static Signal subtractSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+        System.out.println("--------");
+        s2.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    if (map.get(DoubleRounder.round(k, 1)) != null) {
+                        map.put(DoubleRounder.round(k, 1), map.get(DoubleRounder.round(k, 1) - v));
+                    }
+                    else map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+
+        map.forEach((k, v) -> {
+            System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+        });
+
+        String name = s1.getName() + " - " + s2.getName();
+        Double frequencySampling = s1.getFrequencySampling();
+
+        return new OperationalSignal(name, frequencySampling, map);
     }
 
-    public Signal multiplySignals(Signal s1, Signal s2) {
-        return s1;
+    public static Signal multiplySignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+        System.out.println("--------");
+        s2.getData().forEach(
+                (k, v) -> {
+                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+                    if (map.get(DoubleRounder.round(k, 1)) != null) {
+                        map.put(DoubleRounder.round(k, 1), v * map.get(DoubleRounder.round(k, 1)));
+                    }
+                    else map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+
+        map.forEach((k, v) -> {
+            System.out.println(DoubleRounder.round(k, 1) + ": " + v);
+        });
+
+        String name = s1.getName() + " * " + s2.getName();
+        Double frequencySampling = s1.getFrequencySampling();
+
+        return new OperationalSignal(name, frequencySampling, map);
     }
 
-    public Signal divideSignals(Signal s1, Signal s2) {
-        return s1;
+    public static Signal divideSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getData().forEach(
+                (k, v) -> map.put(DoubleRounder.round(k, 1), v)
+        );
+
+        s2.getData().forEach(
+                (k, v) -> {
+                    if (map.get(DoubleRounder.round(k, 1)) != null) {
+                        double tmp = map.get(DoubleRounder.round(k, 1)) / v;
+                        map.put(DoubleRounder.round(k, 1), tmp);
+                    }
+                    else map.put(DoubleRounder.round(k, 1), v);
+                }
+        );
+
+        String name = s1.getName() + " / " + s2.getName();
+        Double frequencySampling = s1.getFrequencySampling();
+
+        return new OperationalSignal(name, frequencySampling, map);
     }
 }

@@ -141,28 +141,26 @@ public class MainAppController {
     private void editSignal(ActionEvent e) {
         Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
 
-        if (selectedSignal != null)
+        if (selectedSignal != null && !selectedSignal.getSignalType().equals(""))
             createSignalDetailsWindow(signalList.getSelectionModel().getSelectedItem());
     }
 
     @FXML
-    private void addSignal(ActionEvent e) {
-        createSignalChooseWindow("Dodaj");
-    }
+    private void addSignal(ActionEvent e) { createSignalChooseWindow(Utils.ADD_OPPERATION); }
 
     @FXML
     private void substractSignal(ActionEvent e) {
-        createSignalChooseWindow("Odejmij");
+        createSignalChooseWindow(Utils.SUB_OPERATION);
     }
 
     @FXML
     private void multiplySignal(ActionEvent e) {
-        createSignalChooseWindow("Pomnóż");
+        createSignalChooseWindow(Utils.MUL_OPERATION);
     }
 
     @FXML
     private void divideSignal(ActionEvent e) {
-        createSignalChooseWindow("Podziel");
+        createSignalChooseWindow(Utils.DIV_OPERATION);
     }
 
     private void setupListeners() {
@@ -187,7 +185,6 @@ public class MainAppController {
                 }
         );
     }
-
 
     private void generateLineChart(Signal signal) {
         scatterChart.getData().clear();
@@ -234,10 +231,14 @@ public class MainAppController {
     }
 
     private void createSignalChooseWindow(String operation) {
+        if (signalList.getSelectionModel().getSelectedItem() == null)
+            return;
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/SignalChooser.fxml"));
             SignalChooser signalChooser = new SignalChooser();
             signalChooser.setOperation(operation);
+            signalChooser.setSignal(signalList.getSelectionModel().getSelectedItem());
 
             fxmlLoader.setController(signalChooser);
             Parent root = fxmlLoader.load();
@@ -293,7 +294,7 @@ public class MainAppController {
         varianceLbl.setText(String.format("%.2f", selectedSignal.getVariance()));
         rmsLbl.setText(String.format("%.2f", selectedSignal.getRms()));
 
-        amplitudeLbl.setText(String.valueOf(selectedSignal.getAmplitude()));
+        amplitudeLbl.setText(String.format("%.2f", (selectedSignal.getAmplitude())));
         startTimeLbl.setText(String.valueOf(selectedSignal.getStartTime()));
         durationLbl.setText(String.valueOf(selectedSignal.getDuration()));
         if (selectedSignal.getBaseInterval() != null) {
@@ -301,7 +302,7 @@ public class MainAppController {
         } else {
             baseIntervalLbl.setText("");
         }
-        frequencySamplingLbl.setText(String.valueOf(selectedSignal.getFrequencySampling()));
+        frequencySamplingLbl.setText(String.format("%.2f", (selectedSignal.getFrequencySampling())));
     }
 
     private void removeSignalInfo() {

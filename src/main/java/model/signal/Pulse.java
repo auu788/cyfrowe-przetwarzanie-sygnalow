@@ -18,7 +18,7 @@ public class Pulse extends Signal {
 
     @Override
     protected void generateSignal() {
-        int counter = 0;
+
         double i = startTime;
         Random rand = new Random();
         while (i < startTime + duration) {

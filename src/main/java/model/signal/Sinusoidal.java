@@ -8,7 +8,7 @@ public class Sinusoidal extends Signal {
         this.name = name;
         this.amplitude = amplitude;
         this.startTime = startTime;
-        this.duration = (duration / baseInterval) * baseInterval;
+        this.duration = duration;
         this.frequencySampling = frequencySampling;
         this.baseInterval = baseInterval;
 

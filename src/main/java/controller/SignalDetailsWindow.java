@@ -64,7 +64,7 @@ public class SignalDetailsWindow {
         setupValidation(signalDurationTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(signalBaseIntervalTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(frequencySamplingTxt, VALIDATION_TYPE.DOUBLE);
-        setupValidation(signalFillFactorTxt, VALIDATION_TYPE.INTEGER);
+        setupValidation(signalFillFactorTxt, VALIDATION_TYPE.DOUBLE);
         setupValidation(jumpNumTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(jumpTimeTxt, VALIDATION_TYPE.INTEGER);
         setupValidation(amplitudeProbabilityTxt, VALIDATION_TYPE.DOUBLE);
@@ -79,7 +79,7 @@ public class SignalDetailsWindow {
         validate(signalDurationTxt, VALIDATION_TYPE.INTEGER);
         validate(signalBaseIntervalTxt, VALIDATION_TYPE.INTEGER);
         validate(frequencySamplingTxt, VALIDATION_TYPE.DOUBLE);
-        validate(signalFillFactorTxt, VALIDATION_TYPE.INTEGER);
+        validate(signalFillFactorTxt, VALIDATION_TYPE.DOUBLE);
         validate(jumpNumTxt, VALIDATION_TYPE.INTEGER);
         validate(jumpTimeTxt, VALIDATION_TYPE.INTEGER);
         validate(amplitudeProbabilityTxt, VALIDATION_TYPE.DOUBLE);

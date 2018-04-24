@@ -31,6 +31,7 @@ public class RectangularSymmetric extends Rectangular {
                 this.signal.put(i, -amplitude);
             }
             i += 1 / frequencySampling;
+            counter++;
         }
     }
 }

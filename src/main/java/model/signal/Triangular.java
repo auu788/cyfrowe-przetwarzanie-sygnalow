@@ -32,6 +32,7 @@ public class Triangular extends Rectangular {
                         amplitude / (1 - fillFactor));
             }
             i += 1 / frequencySampling;
+            counter++;
         }
     }
 }
