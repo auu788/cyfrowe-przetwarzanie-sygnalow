@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import model.ArithmeticUtils;
 import model.Signal;
 import model.Utils;
 
@@ -38,13 +39,13 @@ public class SignalChooser implements Initializable {
         Signal productSignal = null;
 
         if (this.operation == Utils.ADD_OPPERATION) {
-            productSignal = Utils.addSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
+            productSignal = ArithmeticUtils.addSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.SUB_OPERATION) {
-            productSignal = Utils.subtractSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
+            productSignal = ArithmeticUtils.subtractSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.MUL_OPERATION) {
-            productSignal = Utils.multiplySignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
+            productSignal = ArithmeticUtils.multiplySignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.DIV_OPERATION) {
-            productSignal = Utils.divideSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
+            productSignal = ArithmeticUtils.divideSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         }
 
         MainAppController.signalItems.add(productSignal);
