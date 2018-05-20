@@ -13,9 +13,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.Signal;
-import model.SignalDeserializer;
-import model.Utils;
+import model.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,6 +25,9 @@ public class MainAppController {
     public static ObservableList<Signal> signalItems = FXCollections.observableArrayList();
 
     private Stage stage;
+
+    @FXML LineChart<String, Double> samplingLineChart;
+    @FXML TextField numOfSamplesTxt;
 
     @FXML NumberAxis lineXAxis;
     @FXML NumberAxis lineYAxis;
@@ -62,7 +63,7 @@ public class MainAppController {
     private void initialize() {
         signalList.setItems(signalItems);
         bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
-
+//
         lineXAxis.setAutoRanging(false);
         lineXAxis.setLabel("t[s]");
 
@@ -71,6 +72,7 @@ public class MainAppController {
 
         barChart.setLegendVisible(false);
         scatterChart.setLegendVisible(false);
+        samplingLineChart.setLegendVisible(false);
 
         setupListeners();
     }
@@ -163,6 +165,12 @@ public class MainAppController {
         createSignalChooseWindow(Utils.DIV_OPERATION);
     }
 
+    @FXML
+    private void generateSamplingChart(ActionEvent e) {
+        Integer numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
+        generateSamplingChart(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
+    }
+
     private void setupListeners() {
         bucketsNumSlider.valueProperty().addListener(
                 (obs, oldValue, newValue) -> {
@@ -184,6 +192,43 @@ public class MainAppController {
                     generateBarChart(selectedSignal, (int) bucketsNumSlider.getValue());
                 }
         );
+    }
+    private void generateSamplingChart(Signal signal, Integer numOfSamples) {
+        samplingLineChart.getData().clear();
+
+        Integer startTime = signal.getStartTime();
+        Double frequencySampling = signal.getFrequencySampling();
+        Integer duration = signal.getDuration();
+        int minValue = signal.getMinValue();
+        int maxValue = signal.getMaxValue();
+        double ampltiude = signal.getAmplitude();
+        Map<Double, Double> originalSignalData = signal.getData();
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signal, numOfSamples);
+        System.out.println("WEJSZŁ");
+        System.out.println("MSE: " + ParamsUtils.calculateMSE(originalSignalData, samplingSignalData));
+        System.out.println("MD: " + ParamsUtils.calculateMD(originalSignalData, samplingSignalData));
+        System.out.println("PSNR: " + ParamsUtils.calculatePSNR(originalSignalData, samplingSignalData));
+        System.out.println("SNR: " + ParamsUtils.calculateSNR(originalSignalData, samplingSignalData));
+
+
+
+        XYChart.Series<String, Double> orignalSeries = new XYChart.Series<>();
+        XYChart.Series<String, Double> samplingSeries = new XYChart.Series<>();
+
+        originalSignalData.forEach(
+                (k, v) -> {
+                    orignalSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
+                }
+        );
+
+        samplingSignalData.forEach(
+                (k, v) -> {
+                    samplingSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
+                }
+        );
+
+        samplingLineChart.setTitle("Wykres liniowy");
+        samplingLineChart.getData().addAll(orignalSeries, samplingSeries);
     }
 
     private void generateLineChart(Signal signal) {

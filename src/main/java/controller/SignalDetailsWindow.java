@@ -93,8 +93,6 @@ public class SignalDetailsWindow {
         stage.close();
     }
 
-
-
     @FXML
     private void cancel(ActionEvent e) {
         final Node source = (Node) e.getSource();

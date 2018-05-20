@@ -113,25 +113,6 @@ public abstract class Signal {
     public void setData(TreeMap<Double, Double> data) {
         this.signal = data;
     }
-//    public void setBaseInterval(Integer baseInterval) {
-//        this.baseInterval = baseInterval;
-//    }
-//
-//    public void setFillFactor(Integer fillFactor) {
-//        this.fillFactor = fillFactor;
-//    }
-//
-//    public void setJumpNum(Integer jumpNum) {
-//        this.jumpNum = jumpNum;
-//    }
-//
-//    public void setJumpTime(Integer jumpTime) {
-//        this.jumpTime = jumpTime;
-//    }
-//
-//    public void setAmplitudeProbability(Double amplitudeProbability) {
-//        this.amplitudeProbability = amplitudeProbability;
-//    }
 
     public void setSignalType(String signalType) {
         this.signalType = signalType;

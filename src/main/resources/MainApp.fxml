@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <columnConstraints>
       <ColumnConstraints />
    </columnConstraints>
@@ -30,119 +44,171 @@
             </Pane>
             <Pane fx:id="signalDetailsPane" layoutX="193.0" layoutY="14.0" prefHeight="522.0" prefWidth="692.0" style="-fx-border-color: grey;">
                <children>
-                  <BarChart fx:id="barChart" layoutX="24.0" layoutY="164.0" prefHeight="150.0" prefWidth="621.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                  </BarChart>
-                  <Slider fx:id="bucketsNumSlider" blockIncrement="3.0" layoutX="658.0" layoutY="164.0" max="30.0" min="3.0" orientation="VERTICAL" prefHeight="122.0" prefWidth="14.0" />
-                  <Label fx:id="bucketsNumLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="658.0" layoutY="289.0" prefHeight="17.0" prefWidth="14.0" textAlignment="CENTER" />
                   <Separator layoutX="14.0" layoutY="313.0" prefHeight="3.0" prefWidth="666.0" />
-                  <Pane layoutX="30.0" layoutY="369.0" prefHeight="128.0" prefWidth="183.0">
+                  <Pane layoutY="304.0" prefHeight="211.0" prefWidth="692.0">
                      <children>
-                        <Label layoutY="2.0" prefHeight="25.0" prefWidth="43.0" text="Średnia">
+                        <Pane layoutX="464.0" layoutY="24.0" prefHeight="60.0" prefWidth="196.0" style="-fx-border-color: grey;">
+                           <children>
+                              <Button layoutX="23.0" layoutY="18.0" mnemonicParsing="false" onAction="#editSignal" prefWidth="60.0" text="Edytuj" />
+                              <Button layoutX="113.0" layoutY="18.0" mnemonicParsing="false" onAction="#removeSignal" prefWidth="60.0" text="Usuń" />
+                           </children>
+                        </Pane>
+                        <Label fx:id="signalNameLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="418.0" text="Nazwa wykresu" textAlignment="CENTER">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
-                        <Label layoutY="27.0" prefHeight="25.0" text="Średnia bezwzględna">
+                        <Label fx:id="signalTypeLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="44.0" prefHeight="18.0" prefWidth="418.0" text="Typ wykresu" textAlignment="CENTER">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font size="13.0" />
                            </font>
                         </Label>
-                        <Label layoutY="52.0" prefHeight="25.0" text="Moc średnia">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="77.0" prefHeight="25.0" prefWidth="62.0" text="Wariancja">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="102.0" prefHeight="25.0" text="Wartość skuteczna">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="avgLbl" layoutX="155.0" layoutY="2.0" prefHeight="25.0" />
-                        <Label fx:id="absoluteAvgLbl" layoutX="155.0" layoutY="27.0" prefHeight="25.0" />
-                        <Label fx:id="avgSignalPowerLbl" layoutX="155.0" layoutY="52.0" prefHeight="25.0" />
-                        <Label fx:id="varianceLbl" layoutX="155.0" layoutY="77.0" prefHeight="25.0" />
-                        <Label fx:id="rmsLbl" layoutX="155.0" layoutY="102.0" prefHeight="25.0" />
+                        <Pane layoutX="464.0" layoutY="106.0" prefHeight="88.0" prefWidth="196.0" style="-fx-border-color: grey;">
+                           <children>
+                              <Button layoutX="23.0" layoutY="13.0" mnemonicParsing="false" onAction="#addSignal" prefWidth="60.0" text="Dodaj" />
+                              <Button layoutX="114.0" layoutY="13.0" mnemonicParsing="false" onAction="#substractSignal" prefWidth="60.0" text="Odejmij" />
+                              <Button layoutX="23.0" layoutY="49.0" mnemonicParsing="false" onAction="#multiplySignal" prefWidth="60.0" text="Pomnóż" />
+                              <Button layoutX="114.0" layoutY="49.0" mnemonicParsing="false" onAction="#divideSignal" prefWidth="60.0" text="Podziel" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="255.0" layoutY="63.0" prefHeight="128.0" prefWidth="183.0">
+                           <children>
+                              <Label layoutY="2.0" prefHeight="25.0" prefWidth="88.0" text="Amplituda">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="27.0" prefHeight="25.0" text="Czas początkowy">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="52.0" prefHeight="25.0" text="Czas trwania sygnału">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="77.0" prefHeight="25.0" prefWidth="119.0" text="Okres próbkowania">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="102.0" prefHeight="25.0" text="Częstotliwość">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="amplitudeLbl" layoutX="155.0" layoutY="2.0" prefHeight="25.0" />
+                              <Label fx:id="startTimeLbl" layoutX="155.0" layoutY="27.0" prefHeight="25.0" />
+                              <Label fx:id="durationLbl" layoutX="155.0" layoutY="52.0" prefHeight="25.0" />
+                              <Label fx:id="baseIntervalLbl" layoutX="155.0" layoutY="77.0" prefHeight="25.0" />
+                              <Label fx:id="frequencySamplingLbl" layoutX="155.0" layoutY="102.0" prefHeight="25.0" />
+                           </children>
+                        </Pane>
+                        <Separator layoutX="233.0" layoutY="69.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="7.0" />
+                        <Pane layoutX="27.0" layoutY="64.0" prefHeight="128.0" prefWidth="183.0">
+                           <children>
+                              <Label layoutY="2.0" prefHeight="25.0" prefWidth="43.0" text="Średnia">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="27.0" prefHeight="25.0" text="Średnia bezwzględna">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="52.0" prefHeight="25.0" text="Moc średnia">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="77.0" prefHeight="25.0" prefWidth="62.0" text="Wariancja">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutY="102.0" prefHeight="25.0" text="Wartość skuteczna">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="avgLbl" layoutX="155.0" layoutY="2.0" prefHeight="25.0" />
+                              <Label fx:id="absoluteAvgLbl" layoutX="155.0" layoutY="27.0" prefHeight="25.0" />
+                              <Label fx:id="avgSignalPowerLbl" layoutX="155.0" layoutY="52.0" prefHeight="25.0" />
+                              <Label fx:id="varianceLbl" layoutX="155.0" layoutY="77.0" prefHeight="25.0" />
+                              <Label fx:id="rmsLbl" layoutX="155.0" layoutY="102.0" prefHeight="25.0" />
+                           </children>
+                        </Pane>
                      </children>
                   </Pane>
-                  <Separator layoutX="220.0" layoutY="369.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="7.0" />
-                  <Pane layoutX="243.0" layoutY="369.0" prefHeight="128.0" prefWidth="183.0">
-                     <children>
-                        <Label layoutY="2.0" prefHeight="25.0" prefWidth="88.0" text="Amplituda">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="27.0" prefHeight="25.0" text="Czas początkowy">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="52.0" prefHeight="25.0" text="Czas trwania sygnału">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="77.0" prefHeight="25.0" prefWidth="119.0" text="Okres próbkowania">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label layoutY="102.0" prefHeight="25.0" text="Częstotliwość">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="amplitudeLbl" layoutX="155.0" layoutY="2.0" prefHeight="25.0" />
-                        <Label fx:id="startTimeLbl" layoutX="155.0" layoutY="27.0" prefHeight="25.0" />
-                        <Label fx:id="durationLbl" layoutX="155.0" layoutY="52.0" prefHeight="25.0" />
-                        <Label fx:id="baseIntervalLbl" layoutX="155.0" layoutY="77.0" prefHeight="25.0" />
-                        <Label fx:id="frequencySamplingLbl" layoutX="155.0" layoutY="102.0" prefHeight="25.0" />
-                     </children>
-                  </Pane>
-                  <Separator layoutX="439.0" layoutY="369.0" orientation="VERTICAL" prefHeight="128.0" prefWidth="7.0" />
-                  <Pane layoutX="466.0" layoutY="409.0" prefHeight="88.0" prefWidth="196.0" style="-fx-border-color: grey;">
-                     <children>
-                        <Button layoutX="23.0" layoutY="13.0" mnemonicParsing="false" onAction="#addSignal" prefWidth="60.0" text="Dodaj" />
-                        <Button layoutX="114.0" layoutY="13.0" mnemonicParsing="false" onAction="#substractSignal" prefWidth="60.0" text="Odejmij" />
-                        <Button layoutX="23.0" layoutY="49.0" mnemonicParsing="false" onAction="#multiplySignal" prefWidth="60.0" text="Pomnóż" />
-                        <Button layoutX="114.0" layoutY="49.0" mnemonicParsing="false" onAction="#divideSignal" prefWidth="60.0" text="Podziel" />
-                     </children>
-                  </Pane>
-                  <Label fx:id="signalNameLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="24.0" layoutY="318.0" prefHeight="25.0" prefWidth="418.0" text="Nazwa wykresu" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <Pane layoutX="466.0" layoutY="330.0" prefHeight="60.0" prefWidth="196.0" style="-fx-border-color: grey;">
-                     <children>
-                        <Button layoutX="23.0" layoutY="18.0" mnemonicParsing="false" onAction="#editSignal" prefWidth="60.0" text="Edytuj" />
-                        <Button layoutX="113.0" layoutY="18.0" mnemonicParsing="false" onAction="#removeSignal" prefWidth="60.0" text="Usuń" />
-                     </children>
-                  </Pane>
-                  <ScatterChart fx:id="scatterChart" layoutX="21.0" layoutY="14.0" prefHeight="150.0" prefWidth="629.0">
-                    <xAxis>
-                      <NumberAxis fx:id="lineXAxis" side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis fx:id="lineYAxis" side="LEFT" />
-                    </yAxis>
-                  </ScatterChart>
-                  <Label fx:id="signalTypeLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="24.0" layoutY="343.0" prefHeight="18.0" prefWidth="418.0" text="Typ wykresu" textAlignment="CENTER">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
+                  <TabPane prefHeight="309.0" prefWidth="692.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Wykres punktowy">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <ScatterChart fx:id="scatterChart" layoutX="14.0" layoutY="13.0" prefHeight="255.0" prefWidth="666.0">
+                                       <xAxis>
+                                          <NumberAxis fx:id="lineXAxis" side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis fx:id="lineYAxis" side="LEFT" />
+                                       </yAxis>
+                                    </ScatterChart>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                      <Tab text="Histogram">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <BarChart fx:id="barChart" layoutX="14.0" layoutY="13.0" prefHeight="255.0" prefWidth="623.0">
+                                      <xAxis>
+                                        <CategoryAxis side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                      </yAxis>
+                                    </BarChart>
+                                    <Slider fx:id="bucketsNumSlider" blockIncrement="1.0" layoutX="658.0" layoutY="14.0" max="30.0" min="5.0" orientation="VERTICAL" prefHeight="211.0" prefWidth="14.0" />
+                                    <Label fx:id="bucketsNumLbl" alignment="CENTER" contentDisplay="CENTER" layoutX="656.0" layoutY="234.0" prefHeight="17.0" prefWidth="19.0" text="0" textAlignment="CENTER" />
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                        <Tab text="Próbkowanie">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <LineChart fx:id="samplingLineChart" layoutX="14.0" layoutY="14.0" prefHeight="236.0" prefWidth="666.0">
+                                      <xAxis>
+                                        <CategoryAxis side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                      </yAxis>
+                                    </LineChart>
+                                    <Label layoutX="279.0" layoutY="242.0" text="Ilość próbek:" />
+                                    <TextField fx:id="numOfSamplesTxt" layoutX="356.0" layoutY="238.0" prefHeight="25.0" prefWidth="43.0" />
+                                    <Button layoutX="415.0" layoutY="238.0" mnemonicParsing="false" onAction="#generateSamplingChart" text="Generuj wykres" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab text="Kwantyzacja">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          </content>
+                        </Tab>
+                        <Tab text="Rekonstrukcja">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
                </children>
             </Pane>
          </children></Pane>
