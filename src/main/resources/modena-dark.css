@@ -4,6 +4,14 @@
  */
 
 /* Redefine base colors */
+.chart-series-line {
+    -fx-stroke-width: 2px;
+    -fx-effect: null;
+}
+
+.default-color0.chart-series-line { -fx-stroke: blue; }
+.default-color1.chart-series-line { -fx-stroke: red; }
+
 .root {
     -fx-base: rgb(50, 50, 50);
     -fx-background: rgb(50, 50, 50);

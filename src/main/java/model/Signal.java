@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 public abstract class Signal {
@@ -16,6 +18,7 @@ public abstract class Signal {
     protected Double amplitudeProbability;
 
     protected TreeMap<Double, Double> signal = new TreeMap<>();
+    protected List<Double> analogSignal = new ArrayList<>();
 
     protected Double avg;               // średnia
     protected Double absoluteAvg;       // średnia bezwzględna

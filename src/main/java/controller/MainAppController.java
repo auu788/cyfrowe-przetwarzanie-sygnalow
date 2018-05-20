@@ -148,7 +148,7 @@ public class MainAppController {
     }
 
     @FXML
-    private void addSignal(ActionEvent e) { createSignalChooseWindow(Utils.ADD_OPPERATION); }
+    private void addSignal(ActionEvent e) { createSignalChooseWindow(Utils.ADD_OPERATION); }
 
     @FXML
     private void substractSignal(ActionEvent e) {
@@ -202,16 +202,19 @@ public class MainAppController {
         int minValue = signal.getMinValue();
         int maxValue = signal.getMaxValue();
         double ampltiude = signal.getAmplitude();
+
         Map<Double, Double> originalSignalData = signal.getData();
+
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signal, numOfSamples);
-        System.out.println("WEJSZŁ");
+
+        System.out.println("Oryginał: " + originalSignalData);
+        System.out.println("Sampling: " + samplingSignalData);
         System.out.println("MSE: " + ParamsUtils.calculateMSE(originalSignalData, samplingSignalData));
         System.out.println("MD: " + ParamsUtils.calculateMD(originalSignalData, samplingSignalData));
         System.out.println("PSNR: " + ParamsUtils.calculatePSNR(originalSignalData, samplingSignalData));
         System.out.println("SNR: " + ParamsUtils.calculateSNR(originalSignalData, samplingSignalData));
 
-
-
+        samplingLineChart.setCreateSymbols(false);
         XYChart.Series<String, Double> orignalSeries = new XYChart.Series<>();
         XYChart.Series<String, Double> samplingSeries = new XYChart.Series<>();
 
@@ -229,6 +232,8 @@ public class MainAppController {
 
         samplingLineChart.setTitle("Wykres liniowy");
         samplingLineChart.getData().addAll(orignalSeries, samplingSeries);
+
+        samplingLineChart.getData();
     }
 
     private void generateLineChart(Signal signal) {

@@ -38,7 +38,7 @@ public class SignalChooser implements Initializable {
     private void choose(ActionEvent e) {
         Signal productSignal = null;
 
-        if (this.operation == Utils.ADD_OPPERATION) {
+        if (this.operation == Utils.ADD_OPERATION) {
             productSignal = ArithmeticUtils.addSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.SUB_OPERATION) {
             productSignal = ArithmeticUtils.subtractSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());

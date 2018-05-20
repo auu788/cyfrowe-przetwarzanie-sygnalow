@@ -12,9 +12,11 @@ public class ParamsUtils {
         double noise = calculateDifferenceSumSquared(firstSignal, secondSignal);
         System.out.println("Noise: " + noise);
         double length = secondSignal.size();
+        System.out.println("MYK: " + (1 / length) * noise);
         return 1/length * noise;
     }
 
+    // id dB
     public static double calculateSNR(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
         List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
 
@@ -50,7 +52,7 @@ public class ParamsUtils {
         List<Double> difference = new ArrayList<>();
         for (int i = 0; i < secondSignal.size(); i++) {
             for(int j=0; j<firstSignal.size(); j++) {
-                if (Math.round(firstSignalKeys.get(j)) == Math.round(secondSignalKeys.get(i))) {
+                if (DoubleRounder.round(firstSignalKeys.get(j), 2) == DoubleRounder.round(secondSignalKeys.get(i), 2)) {
                     double p1 = firstSignalValues.get(j);
                     double p2 = secondSignalValues.get(i);
                     difference.add(Math.abs(p1-p2));
@@ -68,7 +70,13 @@ public class ParamsUtils {
         List<Double> secondSignalKeys = new ArrayList<>(secondSignal.values());
         List<Double> secondSignalValues = new ArrayList<>(secondSignal.values());
 
-        for (int i = 0; i < secondSignal.size(); i++) {
+        for (int i = 0; i < firstSignal.size(); i++) {
+            if (secondSignal.get(firstSignalKeys.get(i)) == null) {
+                double err = firstSignal.get(firstSignalKeys.get(i));
+                sum_sq += (err * err);
+            }
+        }
+/*        for (int i = 0; i < secondSignal.size(); i++) {
             for(int j=0; j<firstSignal.size(); j++) {
                 if (DoubleRounder.round(firstSignalKeys.get(j), 2) == DoubleRounder.round(secondSignalKeys.get(i), 2)) {
                     double p1 = firstSignalValues.get(j);
@@ -78,7 +86,7 @@ public class ParamsUtils {
                     sum_sq += (err * err);
                 }
             }
-        }
+        }*/
         return sum_sq;
     }
 }

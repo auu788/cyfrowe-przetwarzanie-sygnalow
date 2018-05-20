@@ -14,20 +14,14 @@ public class ArithmeticUtils {
                     map.put(DoubleRounder.round(k, 1), v);
                 }
         );
-        System.out.println("--------");
         s2.getData().forEach(
                 (k, v) -> {
-                    System.out.println(DoubleRounder.round(k, 1) + ": " + v);
                     if (map.get(DoubleRounder.round(k, 1)) != null) {
                         map.put(DoubleRounder.round(k, 1), v + map.get(DoubleRounder.round(k, 1)));
                     }
                     else map.put(DoubleRounder.round(k, 1), v);
                 }
         );
-
-        map.forEach((k, v) -> {
-            System.out.println(DoubleRounder.round(k, 1) + ": " + v);
-        });
 
         String name = s1.getName() + " + " + s2.getName();
         Double frequencySampling = s1.getFrequencySampling();
