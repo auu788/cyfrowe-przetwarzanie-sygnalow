@@ -35,7 +35,7 @@ public class Sinusoidal extends Signal {
         double i = startTime;
         int counter = 0;
         while (i < startTime + duration) {
-            this.analogSignal.add(
+            this.analogSignal.put(String.format("%.3f", i),
                     amplitude * Math.sin((2*Math.PI) / baseInterval * ((counter / frequencySampling) - startTime))
             );
             i += 0.001;

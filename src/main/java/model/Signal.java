@@ -18,7 +18,7 @@ public abstract class Signal {
     protected Double amplitudeProbability;
 
     protected TreeMap<Double, Double> signal = new TreeMap<>();
-    protected List<Double> analogSignal = new ArrayList<>();
+    protected TreeMap<String, Double> analogSignal = new TreeMap<>();
 
     protected Double avg;               // średnia
     protected Double absoluteAvg;       // średnia bezwzględna

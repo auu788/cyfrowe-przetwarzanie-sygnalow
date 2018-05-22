@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.*;
@@ -26,8 +29,11 @@ public class MainAppController {
 
     private Stage stage;
 
-    @FXML LineChart<String, Double> samplingLineChart;
+    @FXML SwingNode swingNodeSampling;
+    @FXML SwingNode swingNodeQuantization;
+    @FXML ScatterChart<String, Double> quantizationLineChart;
     @FXML TextField numOfSamplesTxt;
+    @FXML TextField numOfBitsTxt;
 
     @FXML NumberAxis lineXAxis;
     @FXML NumberAxis lineYAxis;
@@ -72,7 +78,6 @@ public class MainAppController {
 
         barChart.setLegendVisible(false);
         scatterChart.setLegendVisible(false);
-        samplingLineChart.setLegendVisible(false);
 
         setupListeners();
     }
@@ -168,7 +173,18 @@ public class MainAppController {
     @FXML
     private void generateSamplingChart(ActionEvent e) {
         Integer numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
-        generateSamplingChart(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
+
+        SwingCharts.createSamplingChart(swingNodeSampling, signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
+    }
+
+    @FXML
+    private void calculateQuantization(ActionEvent e) {
+        Integer numOfBits = Integer.valueOf(numOfBitsTxt.getText());
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), 15);
+        Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, numOfBits);
+
+        SwingCharts.createQuantizationChart(swingNodeQuantization, quant, samplingSignalData);
     }
 
     private void setupListeners() {
@@ -193,6 +209,41 @@ public class MainAppController {
                 }
         );
     }
+
+   /* private void generateQuantizedChart(Map<Double, Double> signal, Integer numOfBits) {
+        quantizationLineChart.getData().clear();
+
+        Map<Double, Double> quantizationData = SamplingUtils.calculateQuantization(signal, numOfBits);
+
+//        System.out.println("Oryginał: " + originalSignalData);
+//        System.out.println("Sampling: " + samplingSignalData);
+//        System.out.println("MSE: " + ParamsUtils.calculateMSE(originalSignalData, samplingSignalData));
+//        System.out.println("MD: " + ParamsUtils.calculateMD(originalSignalData, samplingSignalData));
+//        System.out.println("PSNR: " + ParamsUtils.calculatePSNR(originalSignalData, samplingSignalData));
+//        System.out.println("SNR: " + ParamsUtils.calculateSNR(originalSignalData, samplingSignalData));
+
+        samplingLineChart.setCreateSymbols(false);
+        XYChart.Series<String, Double> orignalSeries = new XYChart.Series<>();
+        XYChart.Series<String, Double> quantizationSeries = new XYChart.Series<>();
+
+        signal.forEach(
+                (k, v) -> {
+                    orignalSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
+                }
+        );
+
+        quantizationData.forEach(
+                (k, v) -> {
+                    quantizationSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
+                }
+        );
+
+        quantizationLineChart.setTitle("Wykres liniowy");
+        quantizationLineChart.getData().addAll(orignalSeries, quantizationSeries);
+
+        quantizationLineChart.getData();
+    }
+
     private void generateSamplingChart(Signal signal, Integer numOfSamples) {
         samplingLineChart.getData().clear();
 
@@ -234,7 +285,7 @@ public class MainAppController {
         samplingLineChart.getData().addAll(orignalSeries, samplingSeries);
 
         samplingLineChart.getData();
-    }
+    }*/
 
     private void generateLineChart(Signal signal) {
         scatterChart.getData().clear();

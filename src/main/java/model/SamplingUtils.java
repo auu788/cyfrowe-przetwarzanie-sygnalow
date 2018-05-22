@@ -12,11 +12,49 @@ public class SamplingUtils {
         List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
         List<Double> signalKeys = new ArrayList<>(originalSignal.signal.keySet());
 
+//        for (double i = 0; i < signalKeys.get(signalKeys.size() - 1); i += 1.0 / samplingTime) {
+//            sampleData.put(i, originalSignal.analogSignal.get(String.format("%.3f", i)));
+//        }
+
         for (int i = 0; i < signalKeys.size(); i += originalSignal.getFrequencySampling() / samplingTime) {
             sampleData.put(signalKeys.get(i), signalValues.get(i));
         }
 
+        System.out.println(sampleData);
         return sampleData;
+    }
+
+    public static Map<Double, Double> calculateQuantization(Map<Double, Double> signal, int n) {
+        List<Double> signalValues = new ArrayList<>(signal.values());
+        List<Double> signalKeys = new ArrayList<>(signal.keySet());
+
+        List<Double> rangeValues = new ArrayList<>();
+        Double min = signalValues.stream().min(Comparator.comparing(Double::valueOf)).get();
+        Double max = signalValues.stream().max(Comparator.comparing(Double::valueOf)).get();
+        Double range = (max - min) / (Math.pow(2, n));
+
+        for (double i = min; i <= max; i += range) {
+            rangeValues.add(i);
+        }
+
+        Map<Double, Double> quantizedSignal = new HashMap<>();
+
+        for (int i = 0; i < signal.size(); i++) {
+            double minDist = max;
+            double value = 0;
+
+            for (double val : rangeValues) {
+                double dist = Math.abs(val - signalValues.get(i));
+                if (dist < minDist) {
+                    minDist = dist;
+                    value = val;
+                }
+            }
+
+            quantizedSignal.put(signalKeys.get(i), value);
+        }
+
+        return quantizedSignal;
     }
 
     /*static class Pair {
