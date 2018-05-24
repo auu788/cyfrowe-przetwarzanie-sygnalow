@@ -29,6 +29,9 @@ public class MainAppController {
 
     private Stage stage;
 
+    @FXML TextField samplingFreqTxt;
+    @FXML ChoiceBox<String> reconstructionChooser;
+    @FXML SwingNode swingNodeReconstruction;
     @FXML SwingNode swingNodeSampling;
     @FXML SwingNode swingNodeQuantization;
     @FXML ScatterChart<String, Double> quantizationLineChart;
@@ -79,7 +82,10 @@ public class MainAppController {
         barChart.setLegendVisible(false);
         scatterChart.setLegendVisible(false);
 
+        reconstructionChooser.setItems(Utils.reconstructionTypes);
         setupListeners();
+
+
     }
 
     @FXML
@@ -185,6 +191,32 @@ public class MainAppController {
         Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, numOfBits);
 
         SwingCharts.createQuantizationChart(swingNodeQuantization, quant, samplingSignalData);
+    }
+
+    @FXML
+    private void reconstructeSignal(ActionEvent e) {
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), 16);
+        Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, 5);
+
+        Map<Double, Double> reconstruction = null;
+
+        switch(reconstructionChooser.getValue()) {
+            case Utils.RECONSTRUCTION_ZERO: {
+                reconstruction = SamplingUtils.extrapolateZeroOrderHold(quant, Double.valueOf(samplingFreqTxt.getText()));
+                break;
+            }
+            case Utils.RECONSTRUCTION_FIRST: {
+                reconstruction = SamplingUtils.extrapolateFirstOrderHold(quant, Double.valueOf(samplingFreqTxt.getText()));
+                break;
+            }
+//            case Utils.INTERPOLATION_SINC: {
+//                reconstruction = SamplingUtils.interpolateSinc(quant, Double.valueOf(samplingFreqTxt.getText()));
+//            }
+        }
+
+        System.out.println(reconstruction);
+
+        SwingCharts.createSamplingChart(swingNodeReconstruction, samplingSignalData, reconstruction);
     }
 
     private void setupListeners() {

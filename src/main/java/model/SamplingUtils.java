@@ -7,6 +7,25 @@ import java.util.*;
 public class SamplingUtils {
 
     public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
+        Map<Double, Double> sampleData = new HashMap<>();
+        int x = originalSignal.signal.size() / samplingTime;
+
+        List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
+        List<Double> signalKeys = new ArrayList<>(originalSignal.signal.keySet());
+
+        for (long i = Math.round(signalKeys.get(0)); i < signalKeys.size(); i = i + x) {
+            for (int j = 0; j < signalKeys.size(); j++) {
+                if (j == Math.round(i)) {
+                    sampleData.put(signalKeys.get((int) i), signalValues.get((int) i));
+                }
+            }
+        }
+
+        return sampleData;
+    }
+
+
+    /*public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
         Map<Double, Double> sampleData = new TreeMap<>();
 
         List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
@@ -22,7 +41,7 @@ public class SamplingUtils {
 
         System.out.println(sampleData);
         return sampleData;
-    }
+    }*/
 
     public static Map<Double, Double> calculateQuantization(Map<Double, Double> signal, int n) {
         List<Double> signalValues = new ArrayList<>(signal.values());
@@ -57,70 +76,117 @@ public class SamplingUtils {
         return quantizedSignal;
     }
 
-    /*static class Pair {
-        public double first;
-        public double second;
+    public static Map<Double, Double> extrapolateZeroOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
+        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
-        public Pair(double first, double second) {
-            this.first = first;
-            this.second = second;
-        }
-    }
+        Map<Double, Double> upsampledSignal = new TreeMap<>();
 
-    static class Point {
-        double x;
-        double y;
+        Double samplesNum = (signalKeys.get(1) - signalKeys.get(0)) / samplingFreq;
 
-        Point (double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+        for (int i = 0; i < signalKeys.size(); i++) {
+            upsampledSignal.put(signalKeys.get(i), signalValues.get(i));
 
-    public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
-        Map<Double, Double> sampleData = new TreeMap<>();
-
-        List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
-        List<Double> signalKeys = new ArrayList<>(originalSignal.signal.keySet());
-
-        System.out.println("Analog size: " + thi);
-
-        for (double i = 0; i < signalKeys.size(); i += 1 / samplingTime) {
-            double analogValue = originalSignal.analogSignal.get((int) i * 100);
-
-            sampleData.put(i, analogValue);
-        }
-
-
-        return sampleData;
-    }
-
-    private static double getLinearValue(Point a, Point b, double x) {
-        double m = (b.x-a.x)/(b.y-a.y);
-        return (x-a.x)*m+a.y;
-    }
-
-    private static Pair getNearestKeys(List<Double> list, Double value) {
-        int nearestIndex = 0;
-        double smallestDiff = Double.MAX_VALUE;
-
-        for (int i = 0; i < list.size(); i++) {
-            if (Math.abs(value - list.get(i)) < smallestDiff) {
-                nearestIndex = i;
-                smallestDiff = Math.abs(value - list.get(i));
+            for (int j = 1; j < samplesNum; j++) {
+                upsampledSignal.put(signalKeys.get(i) + (j * samplingFreq), signalValues.get(i));
             }
         }
 
-        if (nearestIndex == list.size() - 1)
-            return new Pair(list.get(nearestIndex), list.get(nearestIndex - 1));
-        else if (nearestIndex == 0) {
-            return new Pair(list.get(nearestIndex), list.get(nearestIndex + 1));
+        return sampledSignal;
+    }
+
+   /* public static Map<Double, Double> extrapolateZeroOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
+        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
+
+        Map<Double, Double> upsampledSignal = new TreeMap<>();
+        Double rectVal = 0.0;
+        Double T = 1.0 / samplingFreq;
+
+        for (Double t : signalKeys) {
+            Double interpolationSum = 0.0;
+
+            for (int i = 0; i < signalValues.size(); i++) {
+                rectVal = rect((t - (T / 2.0) - (i * T)) / T);
+                interpolationSum += signalValues.get(i) * rectVal;
+            }
+
+            upsampledSignal.put(t, interpolationSum);
         }
-        else {
-            if (Math.abs(list.get(nearestIndex - 1) - value) < Math.abs(list.get(nearestIndex + 1) - value))
-                return new Pair(list.get(nearestIndex - 1), list.get(nearestIndex));
-            else
-                return new Pair(list.get(nearestIndex), list.get(nearestIndex + 1));
-        }
+
+        return upsampledSignal;
     }*/
+
+    public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
+        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
+
+        Map<Double, Double> upsampledSignal = new TreeMap<>();
+
+        Double samplesNum = (signalKeys.get(1) - signalKeys.get(0)) / samplingFreq;
+
+        for (int i = 0; i < signalKeys.size(); i++) {
+            upsampledSignal.put(signalKeys.get(i), signalValues.get(i));
+
+            if (i < signalKeys.size() - 1) {
+                Double dY = (signalValues.get(i + 1) - signalValues.get(i)) / samplesNum;
+                for (int j = 1; j < samplesNum; j++) {
+                    upsampledSignal.put(signalKeys.get(i) + (j * samplingFreq), signalValues.get(i) + (j * dY));
+                }
+            }
+        }
+
+        return upsampledSignal;
+    }
+
+//    public static Map<Double, Double> interpolateSinc(Map<Double, Double> sampledSignal, Double samplingFreq) {
+//        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
+//        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
+//
+//        Map<Double, Double> upsampledSignal = new TreeMap<>();
+//
+//        for (Double t = signalKeys.get(0); t < signalKeys.get(signalKeys.size() - 1); t += samplingFreq) {
+//            Double y = 0.0;
+//            for (int j = 0; j < signalKeys.size(); j++) {
+//                y = y + signalValues.get(j) * sincGen((t / ts - j) - (1.0 / ts) * signalKeys.get(0));
+//            }
+//        }
+//    }
+
+   /* public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
+        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
+
+        Map<Double, Double> upsampledSignal = new TreeMap<>();
+        Double rectVal = 0.0;
+        Double T = 1.0 / samplingFreq;
+
+        for (Double t : signalKeys) {
+            Double interpolationSum = 0.0;
+
+            for (int i = 0; i < signalValues.size(); i++) {
+                rectVal = tri((t - i * T) / T);
+                interpolationSum += signalValues.get(i) * rectVal;
+            }
+
+            upsampledSignal.put(t, interpolationSum);
+        }
+
+        return upsampledSignal;
+    }*/
+
+    private static Double rect(Double t) {
+        if (Math.abs(t) > 0.5) return 0.0;
+        if (Math.abs(t) == 0.5) return 0.5;
+
+        return 1.0;
+    }
+
+    private static Double tri(Double t) {
+        if (Math.abs(t) < 1.0) {
+            return 1.0 - Math.abs(t);
+        } else {
+            return 0.0;
+        }
+    }
 }

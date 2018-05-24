@@ -22,6 +22,16 @@ public class Utils {
     public static final String MUL_OPERATION            = "Pomnóż";
     public static final String DIV_OPERATION            = "Podziel";
 
+    public static final String RECONSTRUCTION_ZERO      = "Zero Hold Order";
+    public static final String RECONSTRUCTION_FIRST     = "First Hold Order";
+    public static final String INTERPOLATION_SINC       = "Interpolacja Sinc";
+
+    public static ObservableList<String> reconstructionTypes = FXCollections.observableArrayList(
+            RECONSTRUCTION_ZERO,
+            RECONSTRUCTION_FIRST,
+            INTERPOLATION_SINC
+    );
+
     public static ObservableList<String> signalTypes = FXCollections.observableArrayList(
             UNIFORM_NOISE,
             GAUSSIAN_NOISE,

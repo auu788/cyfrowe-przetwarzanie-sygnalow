@@ -203,13 +203,19 @@
                                     <Label layoutX="257.0" layoutY="249.0" text="Ilość bitów: " />
                                     <TextField fx:id="numOfBitsTxt" layoutX="320.0" layoutY="245.0" prefHeight="25.0" prefWidth="43.0" />
                                     <Button layoutX="388.0" layoutY="245.0" mnemonicParsing="false" onAction="#calculateQuantization" text="Myk" />
-                                    <SwingNode fx:id="swingNode" layoutX="14.0" layoutY="14.0" />
+                                    <SwingNode fx:id="swingNodeQuantization" layoutX="14.0" layoutY="14.0" />
                                  </children></AnchorPane>
                           </content>
                         </Tab>
                         <Tab text="Rekonstrukcja">
                           <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <SwingNode fx:id="swingNodeReconstruction" layoutX="14.0" layoutY="14.0" />
+                                    <ChoiceBox fx:id="reconstructionChooser" layoutX="470.0" layoutY="241.0" prefWidth="150.0" />
+                                    <Button layoutX="643.0" layoutY="241.0" mnemonicParsing="false" onAction="#reconstructeSignal" text="Pyk" />
+                                    <TextField fx:id="samplingFreqTxt" layoutX="313.0" layoutY="241.0" />
+                                 </children></AnchorPane>
                           </content>
                         </Tab>
                     </tabs>
