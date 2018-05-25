@@ -10,9 +10,7 @@ import java.util.Map;
 public class ParamsUtils {
     public static double calculateMSE(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
         double noise = calculateDifferenceSumSquared(firstSignal, secondSignal);
-        System.out.println("Noise: " + noise);
         double length = secondSignal.size();
-        System.out.println("MYK: " + (1 / length) * noise);
         return 1/length * noise;
     }
 
@@ -21,7 +19,7 @@ public class ParamsUtils {
         List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
 
         double noise = calculateDifferenceSumSquared(firstSignal, secondSignal);
-        double signal=  0;
+        double signal= 0;
         double value;
         for(int i=0; i<firstSignal.size(); i++) {
             value = firstSignalValues.get(i);

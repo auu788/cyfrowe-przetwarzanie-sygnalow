@@ -57,7 +57,7 @@ public class SamplingUtils {
         }
 
         Map<Double, Double> quantizedSignal = new HashMap<>();
-
+        System.out.println("Num of steps: " + rangeValues);
         for (int i = 0; i < signal.size(); i++) {
             double minDist = max;
             double value = 0;
@@ -81,25 +81,6 @@ public class SamplingUtils {
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
         Map<Double, Double> upsampledSignal = new TreeMap<>();
-
-        Double samplesNum = (signalKeys.get(1) - signalKeys.get(0)) / samplingFreq;
-
-        for (int i = 0; i < signalKeys.size(); i++) {
-            upsampledSignal.put(signalKeys.get(i), signalValues.get(i));
-
-            for (int j = 1; j < samplesNum; j++) {
-                upsampledSignal.put(signalKeys.get(i) + (j * samplingFreq), signalValues.get(i));
-            }
-        }
-
-        return sampledSignal;
-    }
-
-   /* public static Map<Double, Double> extrapolateZeroOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
-        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
-        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
-
-        Map<Double, Double> upsampledSignal = new TreeMap<>();
         Double rectVal = 0.0;
         Double T = 1.0 / samplingFreq;
 
@@ -115,45 +96,29 @@ public class SamplingUtils {
         }
 
         return upsampledSignal;
-    }*/
+    }
 
-    public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+    public static Map<Double, Double> interpolateSinc(Map<Double, Double> sampledSignal, Double samplingFreq) {
         List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
         Map<Double, Double> upsampledSignal = new TreeMap<>();
+        Double T = 1.0 / samplingFreq;
 
-        Double samplesNum = (signalKeys.get(1) - signalKeys.get(0)) / samplingFreq;
+        for (Double t : signalKeys) {
+            Double interpolationSum = 0.0;
 
-        for (int i = 0; i < signalKeys.size(); i++) {
-            upsampledSignal.put(signalKeys.get(i), signalValues.get(i));
-
-            if (i < signalKeys.size() - 1) {
-                Double dY = (signalValues.get(i + 1) - signalValues.get(i)) / samplesNum;
-                for (int j = 1; j < samplesNum; j++) {
-                    upsampledSignal.put(signalKeys.get(i) + (j * samplingFreq), signalValues.get(i) + (j * dY));
-                }
+            for (int i = 0; i < signalValues.size(); i++) {
+                interpolationSum += i * T * sinc(t / T - i);
             }
+
+            upsampledSignal.put(t, interpolationSum);
         }
 
         return upsampledSignal;
     }
 
-//    public static Map<Double, Double> interpolateSinc(Map<Double, Double> sampledSignal, Double samplingFreq) {
-//        List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
-//        List<Double> signalValues = new ArrayList<>(sampledSignal.values());
-//
-//        Map<Double, Double> upsampledSignal = new TreeMap<>();
-//
-//        for (Double t = signalKeys.get(0); t < signalKeys.get(signalKeys.size() - 1); t += samplingFreq) {
-//            Double y = 0.0;
-//            for (int j = 0; j < signalKeys.size(); j++) {
-//                y = y + signalValues.get(j) * sincGen((t / ts - j) - (1.0 / ts) * signalKeys.get(0));
-//            }
-//        }
-//    }
-
-   /* public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+    public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
         List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
@@ -173,7 +138,7 @@ public class SamplingUtils {
         }
 
         return upsampledSignal;
-    }*/
+    }
 
     private static Double rect(Double t) {
         if (Math.abs(t) > 0.5) return 0.0;
@@ -188,5 +153,11 @@ public class SamplingUtils {
         } else {
             return 0.0;
         }
+    }
+
+    private static Double sinc(Double x) {
+        if (x == 0) return 1.;
+
+        return Math.sin(x) / x;
     }
 }

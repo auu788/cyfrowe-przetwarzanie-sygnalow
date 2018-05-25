@@ -14,6 +14,8 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.*;
@@ -29,6 +31,22 @@ public class MainAppController {
 
     private Stage stage;
 
+    @FXML Label psnrLbl;
+    @FXML Label snrLbl;
+    @FXML Label mseLbl;
+    @FXML Label mdLbl;
+
+    @FXML TabPane tabPane;
+    @FXML Pane signalDetailsPane;
+    @FXML Tab mainSignalTab;
+    @FXML Tab histogramTab;
+    @FXML Tab samplingTab;
+    @FXML Tab quantTab;
+    @FXML Tab reconstructionTab;
+
+    @FXML AnchorPane samplingPane;
+    @FXML Pane zad1Panel;
+    @FXML Pane zad2Panel;
     @FXML TextField samplingFreqTxt;
     @FXML ChoiceBox<String> reconstructionChooser;
     @FXML SwingNode swingNodeReconstruction;
@@ -64,6 +82,11 @@ public class MainAppController {
     @FXML ListView<Signal> signalList;
     @FXML Label noSignalLbl;
 
+    private Integer numOfSamples;
+    private Integer numOfBits;
+    private Double reconstructionFrequency;
+    private String choosenReconstruction;
+
     public void init(Stage stage) {
         this.stage = stage;
     }
@@ -82,10 +105,8 @@ public class MainAppController {
         barChart.setLegendVisible(false);
         scatterChart.setLegendVisible(false);
 
-        reconstructionChooser.setItems(Utils.reconstructionTypes);
+//        reconstructionChooser.setItems(Utils.reconstructionTypes);
         setupListeners();
-
-
     }
 
     @FXML
@@ -178,45 +199,55 @@ public class MainAppController {
 
     @FXML
     private void generateSamplingChart(ActionEvent e) {
-        Integer numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
+        if (signalList.getSelectionModel().getSelectedItem() == null) return;
+
+        this.numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
         SwingCharts.createSamplingChart(swingNodeSampling, signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
+
+        setSamplingStats(signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
     }
 
     @FXML
     private void calculateQuantization(ActionEvent e) {
-        Integer numOfBits = Integer.valueOf(numOfBitsTxt.getText());
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), 15);
-        Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, numOfBits);
+        if (signalList.getSelectionModel().getSelectedItem() == null) return;
 
+        this.numOfBits = Integer.valueOf(numOfBitsTxt.getText());
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
+        Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, this.numOfBits);
         SwingCharts.createQuantizationChart(swingNodeQuantization, quant, samplingSignalData);
+
+        setSamplingStats(samplingSignalData, quant);
     }
 
     @FXML
     private void reconstructeSignal(ActionEvent e) {
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), 16);
-        Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, 5);
+        if (signalList.getSelectionModel().getSelectedItem() == null) return;
+
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
         Map<Double, Double> reconstruction = null;
+        this.reconstructionFrequency = Double.valueOf(samplingFreqTxt.getText());
 
         switch(reconstructionChooser.getValue()) {
             case Utils.RECONSTRUCTION_ZERO: {
-                reconstruction = SamplingUtils.extrapolateZeroOrderHold(quant, Double.valueOf(samplingFreqTxt.getText()));
+                reconstruction = SamplingUtils.extrapolateZeroOrderHold(samplingSignalData, this.reconstructionFrequency);
                 break;
             }
             case Utils.RECONSTRUCTION_FIRST: {
-                reconstruction = SamplingUtils.extrapolateFirstOrderHold(quant, Double.valueOf(samplingFreqTxt.getText()));
+                reconstruction = SamplingUtils.extrapolateFirstOrderHold(samplingSignalData, this.reconstructionFrequency);
                 break;
             }
-//            case Utils.INTERPOLATION_SINC: {
-//                reconstruction = SamplingUtils.interpolateSinc(quant, Double.valueOf(samplingFreqTxt.getText()));
-//            }
+            case Utils.INTERPOLATION_SINC: {
+                reconstruction = SamplingUtils.interpolateSinc(samplingSignalData, this.reconstructionFrequency);
+                break;
+            }
         }
 
-        System.out.println(reconstruction);
+        SwingCharts.createSamplingChart(swingNodeReconstruction, signalList.getSelectionModel().getSelectedItem().getData(), reconstruction);
 
-        SwingCharts.createSamplingChart(swingNodeReconstruction, samplingSignalData, reconstruction);
+        setSamplingStats(signalList.getSelectionModel().getSelectedItem().getData(), reconstruction);
     }
 
     private void setupListeners() {
@@ -234,90 +265,91 @@ public class MainAppController {
                 event -> {
                     if (signalList.getSelectionModel().getSelectedItem() == null) return;
                     Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
-                    setSignalInfo(selectedSignal);
+                    if (histogramTab.isSelected() || mainSignalTab.isSelected()) loadGeneralBottomPane();
 
                     generateLineChart(selectedSignal);
                     generateBarChart(selectedSignal, (int) bucketsNumSlider.getValue());
                 }
         );
+
+        mainSignalTab.setOnSelectionChanged(
+                event -> {
+                    if (mainSignalTab.isSelected()) {
+                        loadGeneralBottomPane();
+                    }
+                }
+        );
+
+        histogramTab.setOnSelectionChanged(
+                event -> {
+                    if (histogramTab.isSelected()) {
+                        loadGeneralBottomPane();
+                    }
+                }
+        );
+
+        samplingTab.setOnSelectionChanged(
+                event -> {
+                    if (samplingTab.isSelected()) {
+                        loadSamplingBottomPane();
+                    }
+                }
+        );
+
+        quantTab.setOnSelectionChanged(
+                event -> {
+                    if (quantTab.isSelected()) {
+                        loadSamplingBottomPane();
+                    }
+                }
+        );
+
+        reconstructionTab.setOnSelectionChanged(
+                event -> {
+                    if (reconstructionTab.isSelected()) {
+                        loadSamplingBottomPane();
+                    }
+                }
+        );
     }
 
-   /* private void generateQuantizedChart(Map<Double, Double> signal, Integer numOfBits) {
-        quantizationLineChart.getData().clear();
+    private void loadSamplingBottomPane() {
+        signalDetailsPane.getChildren().removeAll(zad2Panel, zad1Panel);
 
-        Map<Double, Double> quantizationData = SamplingUtils.calculateQuantization(signal, numOfBits);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SamplingDetails.fxml"));
+            loader.setController(this);
+            Pane root = loader.load();
+            root.setLayoutY(297);
 
-//        System.out.println("Oryginał: " + originalSignalData);
-//        System.out.println("Sampling: " + samplingSignalData);
-//        System.out.println("MSE: " + ParamsUtils.calculateMSE(originalSignalData, samplingSignalData));
-//        System.out.println("MD: " + ParamsUtils.calculateMD(originalSignalData, samplingSignalData));
-//        System.out.println("PSNR: " + ParamsUtils.calculatePSNR(originalSignalData, samplingSignalData));
-//        System.out.println("SNR: " + ParamsUtils.calculateSNR(originalSignalData, samplingSignalData));
+            signalDetailsPane.getChildren().add(root);
 
-        samplingLineChart.setCreateSymbols(false);
-        XYChart.Series<String, Double> orignalSeries = new XYChart.Series<>();
-        XYChart.Series<String, Double> quantizationSeries = new XYChart.Series<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        signal.forEach(
-                (k, v) -> {
-                    orignalSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
-                }
-        );
-
-        quantizationData.forEach(
-                (k, v) -> {
-                    quantizationSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
-                }
-        );
-
-        quantizationLineChart.setTitle("Wykres liniowy");
-        quantizationLineChart.getData().addAll(orignalSeries, quantizationSeries);
-
-        quantizationLineChart.getData();
+        reconstructionChooser.setItems(Utils.reconstructionTypes);
+        setSamplingInfo();
     }
 
-    private void generateSamplingChart(Signal signal, Integer numOfSamples) {
-        samplingLineChart.getData().clear();
+    private void loadGeneralBottomPane() {
+        signalDetailsPane.getChildren().removeAll(zad2Panel, zad1Panel);
 
-        Integer startTime = signal.getStartTime();
-        Double frequencySampling = signal.getFrequencySampling();
-        Integer duration = signal.getDuration();
-        int minValue = signal.getMinValue();
-        int maxValue = signal.getMaxValue();
-        double ampltiude = signal.getAmplitude();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GeneralStats.fxml"));
+            loader.setController(this);
+            Pane root = loader.load();
+            root.setLayoutY(297);
 
-        Map<Double, Double> originalSignalData = signal.getData();
+            signalDetailsPane.getChildren().add(root);
 
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signal, numOfSamples);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        System.out.println("Oryginał: " + originalSignalData);
-        System.out.println("Sampling: " + samplingSignalData);
-        System.out.println("MSE: " + ParamsUtils.calculateMSE(originalSignalData, samplingSignalData));
-        System.out.println("MD: " + ParamsUtils.calculateMD(originalSignalData, samplingSignalData));
-        System.out.println("PSNR: " + ParamsUtils.calculatePSNR(originalSignalData, samplingSignalData));
-        System.out.println("SNR: " + ParamsUtils.calculateSNR(originalSignalData, samplingSignalData));
-
-        samplingLineChart.setCreateSymbols(false);
-        XYChart.Series<String, Double> orignalSeries = new XYChart.Series<>();
-        XYChart.Series<String, Double> samplingSeries = new XYChart.Series<>();
-
-        originalSignalData.forEach(
-                (k, v) -> {
-                    orignalSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
-                }
-        );
-
-        samplingSignalData.forEach(
-                (k, v) -> {
-                    samplingSeries.getData().add(new XYChart.Data<>(String.format("%.2f", k), v));
-                }
-        );
-
-        samplingLineChart.setTitle("Wykres liniowy");
-        samplingLineChart.getData().addAll(orignalSeries, samplingSeries);
-
-        samplingLineChart.getData();
-    }*/
+        Signal selectedSignal = signalList.getSelectionModel().getSelectedItem();
+        if (selectedSignal != null) setSignalInfo(selectedSignal);
+    }
 
     private void generateLineChart(Signal signal) {
         scatterChart.getData().clear();
@@ -452,5 +484,23 @@ public class MainAppController {
         durationLbl.setText("");
         baseIntervalLbl.setText("");
         frequencySamplingLbl.setText("");
+    }
+
+    private void setSamplingInfo() {
+        if (reconstructionFrequency != null) samplingFreqTxt.setText(String.valueOf(reconstructionFrequency));
+        else samplingFreqTxt.setText("");
+
+        if (numOfBits != null) numOfBitsTxt.setText(String.valueOf(numOfBits));
+        else numOfBitsTxt.setText("");
+
+        if (numOfSamples != null) numOfSamplesTxt.setText(String.valueOf(numOfSamples));
+        else numOfSamplesTxt.setText("");
+    }
+
+    private void setSamplingStats(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
+        psnrLbl.setText(String.format("%.2f", ParamsUtils.calculatePSNR(firstSignal, secondSignal)));
+        snrLbl.setText(String.format("%.2f", ParamsUtils.calculateSNR(firstSignal, secondSignal)));
+        mseLbl.setText(String.format("%.2f", ParamsUtils.calculateMSE(firstSignal, secondSignal)));
+        mdLbl.setText(String.format("%.2f", ParamsUtils.calculateMD(firstSignal, secondSignal)));
     }
 }
