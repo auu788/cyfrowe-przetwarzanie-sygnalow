@@ -34,16 +34,17 @@ public class ArithmeticUtils {
 
         s1.getData().forEach(
                 (k, v) -> {
-                    map.put(DoubleRounder.round(k, 1), v);
+                    map.put(DoubleRounder.round(k, 2), v);
                 }
         );
 
         s2.getData().forEach(
                 (k, v) -> {
-                    if (map.get(DoubleRounder.round(k, 1)) != null) {
-                        map.put(DoubleRounder.round(k, 1), map.get(DoubleRounder.round(k, 1) - v));
+                    System.out.println("AA: " + DoubleRounder.round(k, 2) + ": " + map.get(DoubleRounder.round(k, 1)));
+                    if (map.get(DoubleRounder.round(k, 2)) != null) {
+                        map.put(DoubleRounder.round(k, 2), map.get(DoubleRounder.round(k, 2)) - v);
                     }
-                    else map.put(DoubleRounder.round(k, 1), v);
+                    else map.put(DoubleRounder.round(k, 2), v);
                 }
         );
 

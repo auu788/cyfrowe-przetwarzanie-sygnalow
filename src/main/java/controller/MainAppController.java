@@ -85,7 +85,6 @@ public class MainAppController {
     private Integer numOfSamples;
     private Integer numOfBits;
     private Double reconstructionFrequency;
-    private String choosenReconstruction;
 
     public void init(Stage stage) {
         this.stage = stage;
@@ -202,6 +201,8 @@ public class MainAppController {
         if (signalList.getSelectionModel().getSelectedItem() == null) return;
 
         this.numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
+        this.reconstructionFrequency = (double) numOfSamples / signalList.getSelectionModel().getSelectedItem().getDuration();
+
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
         SwingCharts.createSamplingChart(swingNodeSampling, signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
@@ -228,12 +229,13 @@ public class MainAppController {
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
         Map<Double, Double> reconstruction = null;
-        this.reconstructionFrequency = Double.valueOf(samplingFreqTxt.getText());
+//        this.reconstructionFrequency = Double.valueOf(samplingFreqTxt.getText());
 
         switch(reconstructionChooser.getValue()) {
             case Utils.RECONSTRUCTION_ZERO: {
                 reconstruction = SamplingUtils.extrapolateZeroOrderHold(samplingSignalData, this.reconstructionFrequency);
-                break;
+                SwingCharts.createQuantizationChart(swingNodeReconstruction, reconstruction, signalList.getSelectionModel().getSelectedItem().getData());
+                return;
             }
             case Utils.RECONSTRUCTION_FIRST: {
                 reconstruction = SamplingUtils.extrapolateFirstOrderHold(samplingSignalData, this.reconstructionFrequency);

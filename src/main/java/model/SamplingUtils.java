@@ -1,5 +1,6 @@
 package model;
 
+import org.apache.commons.math3.analysis.function.Sinc;
 import org.decimal4j.util.DoubleRounder;
 
 import java.util.*;
@@ -23,25 +24,6 @@ public class SamplingUtils {
 
         return sampleData;
     }
-
-
-    /*public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
-        Map<Double, Double> sampleData = new TreeMap<>();
-
-        List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
-        List<Double> signalKeys = new ArrayList<>(originalSignal.signal.keySet());
-
-//        for (double i = 0; i < signalKeys.get(signalKeys.size() - 1); i += 1.0 / samplingTime) {
-//            sampleData.put(i, originalSignal.analogSignal.get(String.format("%.3f", i)));
-//        }
-
-        for (int i = 0; i < signalKeys.size(); i += originalSignal.getFrequencySampling() / samplingTime) {
-            sampleData.put(signalKeys.get(i), signalValues.get(i));
-        }
-
-        System.out.println(sampleData);
-        return sampleData;
-    }*/
 
     public static Map<Double, Double> calculateQuantization(Map<Double, Double> signal, int n) {
         List<Double> signalValues = new ArrayList<>(signal.values());
@@ -105,11 +87,13 @@ public class SamplingUtils {
         Map<Double, Double> upsampledSignal = new TreeMap<>();
         Double T = 1.0 / samplingFreq;
 
+        System.out.println(T);
+
         for (Double t : signalKeys) {
             Double interpolationSum = 0.0;
-
+            Sinc sinc = new Sinc(true);
             for (int i = 0; i < signalValues.size(); i++) {
-                interpolationSum += i * T * sinc(t / T - i);
+                interpolationSum += i * T * sinc.value(t / T - i);
             }
 
             upsampledSignal.put(t, interpolationSum);
@@ -153,11 +137,5 @@ public class SamplingUtils {
         } else {
             return 0.0;
         }
-    }
-
-    private static Double sinc(Double x) {
-        if (x == 0) return 1.;
-
-        return Math.sin(x) / x;
     }
 }
