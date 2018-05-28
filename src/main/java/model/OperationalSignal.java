@@ -10,11 +10,9 @@ public class OperationalSignal extends Signal {
         this.signal = data;
         this.startTime = data.firstKey().intValue();
         this.duration = data.lastKey().intValue() - data.firstKey().intValue();
-        System.out.println("Sygałek: " + this.signal);
         this.amplitude = signal.values().stream().mapToDouble(Double::doubleValue).max().getAsDouble();
 
         calcStats();
-        System.out.println(data);
     }
 
     @Override

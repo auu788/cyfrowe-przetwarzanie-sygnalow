@@ -48,7 +48,6 @@ public class SignalDetailsWindow {
 
         if (isEdited) { // Edit
             generateBtn.setText("Zatwierdź edycję");
-            System.out.println(signal.getSignalType());
             signalTypeComboBox.setValue(signal.getSignalType());
             populateDataToEdit();
         } else {

@@ -9,23 +9,34 @@ import java.util.Map;
 
 public class ParamsUtils {
     public static double calculateMSE(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
-        double noise = calculateDifferenceSumSquared(firstSignal, secondSignal);
-        double length = secondSignal.size();
-        return 1/length * noise;
+        double mse_sum = 0;
+        List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
+        List<Double> secondSignalValues = new ArrayList<>(secondSignal.values());
+
+        for (int i = 0; i < secondSignal.size(); i++) {
+            mse_sum += Math.pow(secondSignalValues.get(i) - firstSignalValues.get(i), 2);
+        }
+
+        return (1.0 / secondSignalValues.size()) * mse_sum;
     }
 
     // id dB
     public static double calculateSNR(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
         List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
+        List<Double> secondSignalValues = new ArrayList<>(secondSignal.values());
 
-        double noise = calculateDifferenceSumSquared(firstSignal, secondSignal);
-        double signal= 0;
-        double value;
-        for(int i=0; i<firstSignal.size(); i++) {
-            value = firstSignalValues.get(i);
-            signal += value * value;
+        double numeratorSum = 0;
+
+        for (int i = 0; i < firstSignalValues.size(); i++) {
+            numeratorSum += Math.pow(firstSignalValues.get(i), 2);
         }
-        return 10 * Math.log10((signal/noise));
+
+        double denomiatorSum = 0;
+        for (int i = 0; i < secondSignalValues.size(); i++) {
+            denomiatorSum += Math.pow(secondSignalValues.get(i) - firstSignalValues.get(i), 2);
+        }
+
+        return 10.0 * Math.log10(numeratorSum / denomiatorSum);
     }
 
     public static double calculatePSNR(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
@@ -37,54 +48,23 @@ public class ParamsUtils {
                 max = firstSignalValues.get(i);
             }
         }
-        double psnr = (max*max)/calculateMSE(firstSignal, secondSignal);
-        return 10 * Math.log10(psnr);
+
+        return 10.0 * Math.log10(max / calculateMSE(firstSignal, secondSignal));
     }
 
     public static double calculateMD(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
-        List<Double> firstSignalKeys = new ArrayList<>(firstSignal.keySet());
         List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
-        List<Double> secondSignalKeys = new ArrayList<>(secondSignal.values());
         List<Double> secondSignalValues = new ArrayList<>(secondSignal.values());
 
-        List<Double> difference = new ArrayList<>();
-        for (int i = 0; i < secondSignal.size(); i++) {
-            for(int j=0; j<firstSignal.size(); j++) {
-                if (DoubleRounder.round(firstSignalKeys.get(j), 2) == DoubleRounder.round(secondSignalKeys.get(i), 2)) {
-                    double p1 = firstSignalValues.get(j);
-                    double p2 = secondSignalValues.get(i);
-                    difference.add(Math.abs(p1-p2));
-                }
+        double mdVal = 0;
+
+        for (int i = 0; i < secondSignalValues.size(); i++) {
+            double tempMdVal = Math.abs(secondSignalValues.get(i) - firstSignalValues.get(i));
+            if (tempMdVal > mdVal) {
+                mdVal = tempMdVal;
             }
         }
-        return Collections.max(difference);
-    }
 
-    public static double calculateDifferenceSumSquared(Map<Double, Double> firstSignal, Map<Double, Double> secondSignal) {
-        double sum_sq = 0;
-
-        List<Double> firstSignalKeys = new ArrayList<>(firstSignal.keySet());
-        List<Double> firstSignalValues = new ArrayList<>(firstSignal.values());
-        List<Double> secondSignalKeys = new ArrayList<>(secondSignal.values());
-        List<Double> secondSignalValues = new ArrayList<>(secondSignal.values());
-
-        for (int i = 0; i < firstSignal.size(); i++) {
-            if (secondSignal.get(firstSignalKeys.get(i)) == null) {
-                double err = firstSignal.get(firstSignalKeys.get(i));
-                sum_sq += (err * err);
-            }
-        }
-/*        for (int i = 0; i < secondSignal.size(); i++) {
-            for(int j=0; j<firstSignal.size(); j++) {
-                if (DoubleRounder.round(firstSignalKeys.get(j), 2) == DoubleRounder.round(secondSignalKeys.get(i), 2)) {
-                    double p1 = firstSignalValues.get(j);
-                    double p2 = secondSignalValues.get(i);
-//                    System.out.println("Err [" + DoubleRounder.round(secondSignalKeys.get(i), 2) + ", " + DoubleRounder.round(firstSignalKeys.get(j), 2) + "]: " + p2 + " - " + p1 + " =" + (p2 - p1));
-                    double err = p2 - p1;
-                    sum_sq += (err * err);
-                }
-            }
-        }*/
-        return sum_sq;
+        return mdVal;
     }
 }

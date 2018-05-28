@@ -38,7 +38,6 @@ public abstract class Signal {
     }
 
     protected void calcStats() {
-        System.out.println(signal.values());
         avg = signal.values().stream().mapToDouble(Double::doubleValue).sum() / (double) signal.size();
         absoluteAvg = signal.values().stream().mapToDouble(Double::doubleValue).map(Math::abs).sum() / (double) signal.size();
         avgSignalPower = signal.values().stream().mapToDouble(Double::doubleValue).map(i -> Math.pow(i, 2)).sum() / (double) signal.size();

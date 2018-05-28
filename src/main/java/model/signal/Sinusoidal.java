@@ -28,20 +28,5 @@ public class Sinusoidal extends Signal {
             i += 1 / frequencySampling;
             counter++;
         }
-        generateAnalogSignal();
-    }
-
-    private void generateAnalogSignal() {
-        double i = startTime;
-        int counter = 0;
-        while (i < startTime + duration) {
-            this.analogSignal.put(String.format("%.3f", i),
-                    amplitude * Math.sin((2*Math.PI) / baseInterval * ((counter / frequencySampling) - startTime))
-            );
-            i += 0.001;
-            counter++;
-        }
-
-        System.out.println("Analog: " + this.analogSignal);
     }
 }

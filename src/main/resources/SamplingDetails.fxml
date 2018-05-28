@@ -53,45 +53,43 @@
                 <Button layoutX="39.0" layoutY="56.0" mnemonicParsing="false" onAction="#calculateQuantization" prefHeight="25.0" prefWidth="118.0" text="Kwantyzuj" />
             </children>
         </Pane>
-        <Pane layoutX="482.0" layoutY="48.0" prefHeight="153.0" prefWidth="196.0" style="-fx-border-color: grey;">
+        <Pane layoutX="482.0" layoutY="112.0" prefHeight="89.0" prefWidth="196.0" style="-fx-border-color: grey;">
             <children>
                 <Label layoutX="64.0" text="Rekonstrukcja">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Label>
-                <TextField fx:id="samplingFreqTxt" layoutX="113.0" layoutY="86.0" prefHeight="25.0" prefWidth="70.0" />
-                <Label layoutX="13.0" layoutY="90.0" text="Częstotliwość:" />
-                <Button layoutX="39.0" layoutY="120.0" mnemonicParsing="false" onAction="#reconstructeSignal" prefHeight="25.0" prefWidth="118.0" text="Rekonstruuj" />
-                <ChoiceBox fx:id="reconstructionChooser" layoutX="14.0" layoutY="38.0" prefHeight="25.0" prefWidth="172.0" />
+                <Button layoutX="39.0" layoutY="56.0" mnemonicParsing="false" onAction="#reconstructeSignal" prefHeight="25.0" prefWidth="118.0" text="Rekonstruuj" />
+                <ChoiceBox fx:id="reconstructionChooser" layoutX="18.0" layoutY="25.0" prefHeight="25.0" prefWidth="172.0" />
             </children>
         </Pane>
-        <Pane layoutX="69.0" prefHeight="101.0" prefWidth="298.0">
+        <Pane layoutX="12.0" prefHeight="101.0" prefWidth="666.0">
             <children>
-                <Label layoutY="3.0" prefHeight="25.0" prefWidth="181.0" text="Błąd średniokwadratowy (MSE)">
+                <Label layoutX="9.0" layoutY="38.0" prefHeight="25.0" prefWidth="181.0" text="Błąd średniokwadratowy (MSE)">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Label>
-                <Label layoutY="27.0" prefHeight="25.0" text="Stosunek sum - sygnał (SNR)">
+                <Label layoutX="9.0" layoutY="65.0" prefHeight="25.0" text="Stosunek sum - sygnał (SNR)">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Label>
-                <Label layoutY="52.0" prefHeight="25.0" text="Szczytowy stosunek sygnał - szum (PSNR)">
+                <Label layoutX="343.0" layoutY="38.0" prefHeight="25.0" text="Szczytowy stosunek sygnał - szum (PSNR)">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Label>
-                <Label layoutY="77.0" prefHeight="25.0" prefWidth="165.0" text="Maksymalna różnica (MD)">
+                <Label layoutX="343.0" layoutY="65.0" prefHeight="25.0" prefWidth="165.0" text="Maksymalna różnica (MD)">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Label>
-                <Label fx:id="mseLbl" layoutX="282.0" layoutY="3.0" prefHeight="25.0" />
-                <Label fx:id="snrLbl" layoutX="283.0" layoutY="27.0" prefHeight="25.0" />
-                <Label fx:id="psnrLbl" layoutX="283.0" layoutY="52.0" prefHeight="25.0" />
-                <Label fx:id="mdLbl" layoutX="283.0" layoutY="77.0" prefHeight="25.0" />
+                <Label fx:id="mseLbl" layoutX="256.0" layoutY="38.0" prefHeight="25.0" />
+                <Label fx:id="snrLbl" layoutX="255.0" layoutY="65.0" prefHeight="25.0" />
+                <Label fx:id="psnrLbl" layoutX="619.0" layoutY="38.0" prefHeight="25.0" />
+                <Label fx:id="mdLbl" layoutX="618.0" layoutY="65.0" prefHeight="25.0" />
             </children>
         </Pane>
     </children>

@@ -27,7 +27,5 @@ public class Uniform extends Signal {
             this.signal.put(i, (gen.nextDouble() * 2 - 1) * amplitude);
             i += 1 / frequencySampling;
         }
-
-        System.out.println(signal);
     }
 }

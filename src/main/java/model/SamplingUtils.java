@@ -8,7 +8,7 @@ import java.util.*;
 public class SamplingUtils {
 
     public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
-        Map<Double, Double> sampleData = new HashMap<>();
+        Map<Double, Double> sampleData = new TreeMap<>();
         int x = originalSignal.signal.size() / samplingTime;
 
         List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
@@ -38,8 +38,7 @@ public class SamplingUtils {
             rangeValues.add(i);
         }
 
-        Map<Double, Double> quantizedSignal = new HashMap<>();
-        System.out.println("Num of steps: " + rangeValues);
+        Map<Double, Double> quantizedSignal = new TreeMap<>();
         for (int i = 0; i < signal.size(); i++) {
             double minDist = max;
             double value = 0;
@@ -63,38 +62,35 @@ public class SamplingUtils {
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
         Map<Double, Double> upsampledSignal = new TreeMap<>();
-        Double rectVal = 0.0;
         Double T = 1.0 / samplingFreq;
 
-        for (Double t : signalKeys) {
-            Double interpolationSum = 0.0;
-
-            for (int i = 0; i < signalValues.size(); i++) {
-                rectVal = rect((t - (T / 2.0) - (i * T)) / T);
-                interpolationSum += signalValues.get(i) * rectVal;
+        for(int i = 0; i < signalKeys.size(); i++) {
+            double t = signalKeys.get(i);
+            double sum = 0;
+            for(int j = 0; j < signalValues.size(); j++) {
+                double rect = rect( (t - (T / 2.0) - (j * T)) / T );
+                sum += signalValues.get(j) * rect;
             }
-
-            upsampledSignal.put(t, interpolationSum);
+            upsampledSignal.put(t, sum);
         }
 
         return upsampledSignal;
     }
 
-    public static Map<Double, Double> interpolateSinc(Map<Double, Double> sampledSignal, Double samplingFreq) {
+    public static Map<Double, Double> sincFunction(Map<Double, Double> sampledSignal, Double samplingFreq) {
         List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 
         Map<Double, Double> upsampledSignal = new TreeMap<>();
         Double T = 1.0 / samplingFreq;
 
-        System.out.println(T);
-
         for (Double t : signalKeys) {
             Double interpolationSum = 0.0;
             Sinc sinc = new Sinc(true);
             for (int i = 0; i < signalValues.size(); i++) {
-                interpolationSum += i * T * sinc.value(t / T - i);
+                interpolationSum += signalValues.get(i) * sinc.value(t / T - i);
             }
+            double sum = 0;
 
             upsampledSignal.put(t, interpolationSum);
         }
@@ -102,7 +98,7 @@ public class SamplingUtils {
         return upsampledSignal;
     }
 
-    public static Map<Double, Double> extrapolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
+    public static Map<Double, Double> interpolateFirstOrderHold(Map<Double, Double> sampledSignal, Double samplingFreq) {
         List<Double> signalKeys = new ArrayList<>(sampledSignal.keySet());
         List<Double> signalValues = new ArrayList<>(sampledSignal.values());
 

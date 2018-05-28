@@ -47,7 +47,6 @@ public class MainAppController {
     @FXML AnchorPane samplingPane;
     @FXML Pane zad1Panel;
     @FXML Pane zad2Panel;
-    @FXML TextField samplingFreqTxt;
     @FXML ChoiceBox<String> reconstructionChooser;
     @FXML SwingNode swingNodeReconstruction;
     @FXML SwingNode swingNodeSampling;
@@ -198,9 +197,11 @@ public class MainAppController {
 
     @FXML
     private void generateSamplingChart(ActionEvent e) {
-        if (signalList.getSelectionModel().getSelectedItem() == null) return;
+        if (signalList.getSelectionModel().getSelectedItem() == null || numOfSamplesTxt.getText().isEmpty()) return;
 
         this.numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
+        if (numOfSamples > signalList.getSelectionModel().getSelectedItem().getDuration() * signalList.getSelectionModel().getSelectedItem().getFrequencySampling()) return;
+
         this.reconstructionFrequency = (double) numOfSamples / signalList.getSelectionModel().getSelectedItem().getDuration();
 
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
@@ -212,7 +213,7 @@ public class MainAppController {
 
     @FXML
     private void calculateQuantization(ActionEvent e) {
-        if (signalList.getSelectionModel().getSelectedItem() == null) return;
+        if (signalList.getSelectionModel().getSelectedItem() == null || numOfBitsTxt.getText().isEmpty() || numOfSamples == null) return;
 
         this.numOfBits = Integer.valueOf(numOfBitsTxt.getText());
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
@@ -224,25 +225,26 @@ public class MainAppController {
 
     @FXML
     private void reconstructeSignal(ActionEvent e) {
-        if (signalList.getSelectionModel().getSelectedItem() == null) return;
+        if (signalList.getSelectionModel().getSelectedItem() == null ||
+                reconstructionChooser.getSelectionModel().getSelectedItem() == null ||
+                reconstructionFrequency == null ||
+                numOfSamples == null) return;
 
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
         Map<Double, Double> reconstruction = null;
-//        this.reconstructionFrequency = Double.valueOf(samplingFreqTxt.getText());
 
         switch(reconstructionChooser.getValue()) {
             case Utils.RECONSTRUCTION_ZERO: {
                 reconstruction = SamplingUtils.extrapolateZeroOrderHold(samplingSignalData, this.reconstructionFrequency);
-                SwingCharts.createQuantizationChart(swingNodeReconstruction, reconstruction, signalList.getSelectionModel().getSelectedItem().getData());
-                return;
+                break;
             }
             case Utils.RECONSTRUCTION_FIRST: {
-                reconstruction = SamplingUtils.extrapolateFirstOrderHold(samplingSignalData, this.reconstructionFrequency);
+                reconstruction = SamplingUtils.interpolateFirstOrderHold(samplingSignalData, this.reconstructionFrequency);
                 break;
             }
             case Utils.INTERPOLATION_SINC: {
-                reconstruction = SamplingUtils.interpolateSinc(samplingSignalData, this.reconstructionFrequency);
+                reconstruction = SamplingUtils.sincFunction(samplingSignalData, this.reconstructionFrequency);
                 break;
             }
         }
@@ -331,6 +333,7 @@ public class MainAppController {
         }
 
         reconstructionChooser.setItems(Utils.reconstructionTypes);
+        reconstructionChooser.setValue(Utils.reconstructionTypes.get(0));
         setSamplingInfo();
     }
 
@@ -489,9 +492,6 @@ public class MainAppController {
     }
 
     private void setSamplingInfo() {
-        if (reconstructionFrequency != null) samplingFreqTxt.setText(String.valueOf(reconstructionFrequency));
-        else samplingFreqTxt.setText("");
-
         if (numOfBits != null) numOfBitsTxt.setText(String.valueOf(numOfBits));
         else numOfBitsTxt.setText("");
 
