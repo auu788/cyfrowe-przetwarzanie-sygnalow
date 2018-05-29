@@ -7,12 +7,40 @@ import java.util.*;
 
 public class SamplingUtils {
 
-    public static Map<Double, Double> generateSampleSignal(Signal originalSignal, Integer samplingTime) {
+    public static Map<Double, Double> generateSampleSignal(Signal originalSignal, int samplingTime) {
+
+        /*
+        if(frequency > original.getSamplingFrequency()) {
+			throw new Exception("Nieprawidłowa częstotliwość!");
+		}
+		if(original.getSamplingFrequency() % frequency != 0) {
+			throw new Exception("Nieprawidłowa częstotliwość!");
+		}
+
+		int step = (int) (original.getSamplingFrequency() / frequency);
+
+		double[] values = new double [(int) (frequency*original.getDuration() + 1)];
+		for(int i = 0, j = 0; i < values.length-1; i++, j+=step) {
+			values[i] = original.getValues()[j];
+		}
+
+		values[values.length-1] = original.getValues()[original.getValues().length-1];
+		sampledValues = values;
+		samplingFrequency = frequency;
+
+		return values;
+		*/
         Map<Double, Double> sampleData = new TreeMap<>();
         int x = originalSignal.signal.size() / samplingTime;
 
         List<Double> signalValues = new ArrayList<>(originalSignal.signal.values());
         List<Double> signalKeys = new ArrayList<>(originalSignal.signal.keySet());
+
+//        for (int i = 0, j = 0; i < signalValues.size(); i++, j += step) {
+//            if (j < signalValues.size())
+//                sampleData.put(signalKeys.get(j), signalValues.get(j));
+//        }
+
 
         for (long i = Math.round(signalKeys.get(0)); i < signalKeys.size(); i = i + x) {
             for (int j = 0; j < signalKeys.size(); j++) {
@@ -84,15 +112,15 @@ public class SamplingUtils {
         Map<Double, Double> upsampledSignal = new TreeMap<>();
         Double T = 1.0 / samplingFreq;
 
-        for (Double t : signalKeys) {
-            Double interpolationSum = 0.0;
-            Sinc sinc = new Sinc(true);
-            for (int i = 0; i < signalValues.size(); i++) {
-                interpolationSum += signalValues.get(i) * sinc.value(t / T - i);
-            }
-            double sum = 0;
+        Sinc sinc = new Sinc(true);
 
-            upsampledSignal.put(t, interpolationSum);
+        for(int i = 0; i < signalValues.size(); i++) {
+            double t = signalKeys.get(i);
+            double sum = 0;
+            for(int j = 0; j < signalValues.size(); j++) {
+                sum += signalValues.get(j) * sinc.value((t / T) - j);
+            }
+            upsampledSignal.put(t, sum);
         }
 
         return upsampledSignal;

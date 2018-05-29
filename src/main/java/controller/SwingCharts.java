@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.Map;
 
 public class SwingCharts {
-    public static void createQuantizationChart(final SwingNode swingNode, Map<Double, Double> quantizedSignal, Map<Double, Double> signal) {
+    public static void createQuantizationChart(final SwingNode swingNode, String chartName, Map<Double, Double> quantizedSignal, Map<Double, Double> signal) {
         SwingUtilities.invokeLater(() -> {
             XYSeries series1 = new XYSeries("1");
 
@@ -41,7 +41,7 @@ public class SwingCharts {
             XYDataset aa = dataset1;
 
             JFreeChart chart = ChartFactory.createXYLineChart(
-                    "Wykres kwantyzacji",
+                    chartName,
                     "t[s]",
                     "A",
                     dataset2,
@@ -69,7 +69,7 @@ public class SwingCharts {
         });
     }
 
-    public static void createSamplingChart(final SwingNode swingNode, Map<Double, Double> sampledSignal, Map<Double, Double> signal) {
+    public static void createSamplingChart(final SwingNode swingNode, String chartName, Map<Double, Double> sampledSignal, Map<Double, Double> signal) {
         SwingUtilities.invokeLater(() -> {
             XYSeries series1 = new XYSeries("1");
 
@@ -88,7 +88,7 @@ public class SwingCharts {
             dataset1.addSeries(series2);
 
             JFreeChart chart = ChartFactory.createXYLineChart(
-                    "Wykres próbkowania",
+                    chartName,
                     "t[s]",
                     "A",
                     dataset1,

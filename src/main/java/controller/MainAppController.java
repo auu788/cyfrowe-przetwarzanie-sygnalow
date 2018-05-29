@@ -204,9 +204,10 @@ public class MainAppController {
 
         this.reconstructionFrequency = (double) numOfSamples / signalList.getSelectionModel().getSelectedItem().getDuration();
 
+
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
 
-        SwingCharts.createSamplingChart(swingNodeSampling, signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
+        SwingCharts.createSamplingChart(swingNodeSampling,"Wykres próbkowania", signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
 
         setSamplingStats(signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
     }
@@ -218,7 +219,7 @@ public class MainAppController {
         this.numOfBits = Integer.valueOf(numOfBitsTxt.getText());
         Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
         Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, this.numOfBits);
-        SwingCharts.createQuantizationChart(swingNodeQuantization, quant, samplingSignalData);
+        SwingCharts.createQuantizationChart(swingNodeQuantization, "Wykres kwantyzacji", quant, samplingSignalData);
 
         setSamplingStats(samplingSignalData, quant);
     }
@@ -249,7 +250,7 @@ public class MainAppController {
             }
         }
 
-        SwingCharts.createSamplingChart(swingNodeReconstruction, signalList.getSelectionModel().getSelectedItem().getData(), reconstruction);
+        SwingCharts.createSamplingChart(swingNodeReconstruction, "Wykres rekonstrukcji", reconstruction, reconstruction);
 
         setSamplingStats(signalList.getSelectionModel().getSelectedItem().getData(), reconstruction);
     }
