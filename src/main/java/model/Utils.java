@@ -26,6 +26,8 @@ public class Utils {
     public static final String RECONSTRUCTION_FIRST     = "First Hold Order";
     public static final String INTERPOLATION_SINC       = "Interpolacja Sinc";
 
+    public static final String WEAVE                    = "Splot";
+
     public static ObservableList<String> reconstructionTypes = FXCollections.observableArrayList(
             RECONSTRUCTION_ZERO,
             RECONSTRUCTION_FIRST,

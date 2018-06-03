@@ -43,6 +43,7 @@ public class MainAppController {
     @FXML Tab samplingTab;
     @FXML Tab quantTab;
     @FXML Tab reconstructionTab;
+    @FXML Tab filteringTab;
 
     @FXML AnchorPane samplingPane;
     @FXML Pane zad1Panel;
@@ -51,8 +52,10 @@ public class MainAppController {
     @FXML SwingNode swingNodeReconstruction;
     @FXML SwingNode swingNodeSampling;
     @FXML SwingNode swingNodeQuantization;
+    @FXML SwingNode swingNodeFiltering;
     @FXML ScatterChart<String, Double> quantizationLineChart;
     @FXML TextField numOfSamplesTxt;
+    @FXML TextField numOfSamplesTxt1;
     @FXML TextField numOfBitsTxt;
 
     @FXML NumberAxis lineXAxis;
@@ -81,7 +84,7 @@ public class MainAppController {
     @FXML ListView<Signal> signalList;
     @FXML Label noSignalLbl;
 
-    private Integer numOfSamples;
+    static Integer numOfSamples;
     private Integer numOfBits;
     private Double reconstructionFrequency;
 
@@ -255,6 +258,15 @@ public class MainAppController {
         setSamplingStats(signalList.getSelectionModel().getSelectedItem().getData(), reconstruction);
     }
 
+    @FXML
+    private void weaveSignals(ActionEvent e) {
+        if (numOfSamplesTxt1.getText().equals("")) {
+            return;
+        }
+        this.numOfSamples = Integer.valueOf( numOfSamplesTxt1.getText() );
+        createSignalChooseWindow( Utils.WEAVE );
+    }
+
     private void setupListeners() {
         bucketsNumSlider.valueProperty().addListener(
                 (obs, oldValue, newValue) -> {
@@ -316,6 +328,34 @@ public class MainAppController {
                     }
                 }
         );
+
+        filteringTab.setOnSelectionChanged(
+                event -> {
+                    if (filteringTab.isSelected()) {
+                        loadFilteringBottomPane();
+                    }
+                }
+        );
+    }
+
+    private void loadFilteringBottomPane() {
+        signalDetailsPane.getChildren().removeAll(zad2Panel, zad1Panel);
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/FilteringDetails.fxml"));
+            loader.setController(this);
+            Pane root = loader.load();
+            root.setLayoutY(297);
+
+            signalDetailsPane.getChildren().add(root);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /*reconstructionChooser.setItems(Utils.reconstructionTypes);
+        reconstructionChooser.setValue(Utils.reconstructionTypes.get(0));
+        setSamplingInfo();*/
     }
 
     private void loadSamplingBottomPane() {

@@ -9,11 +9,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import model.ArithmeticUtils;
-import model.Signal;
-import model.Utils;
+import model.*;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SignalChooser implements Initializable {
@@ -46,9 +45,12 @@ public class SignalChooser implements Initializable {
             productSignal = ArithmeticUtils.multiplySignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.DIV_OPERATION) {
             productSignal = ArithmeticUtils.divideSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
+        } else if (this.operation == Utils.WEAVE) {
+            double frequency = (double) MainAppController.numOfSamples / signal.getDuration();
+            productSignal = FilteringUtils.weave( signal, chooserSignalsList.getSelectionModel().getSelectedItem(), frequency, MainAppController.numOfSamples );
         }
 
-        MainAppController.signalItems.add(productSignal);
+        MainAppController.signalItems.add( productSignal );
 
         final Node source = (Node) e.getSource();
         final Stage stage = (Stage) source.getScene().getWindow();
