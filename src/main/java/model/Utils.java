@@ -28,6 +28,15 @@ public class Utils {
 
     public static final String WEAVE                    = "Splot";
 
+    public static final String LOWPASSFILTER            = "Dolnoprzepustowy";
+    public static final String BANDPASSFILTER           = "Środkowoprzepustowy";
+    public static final String HIGHPASSFILTER           = "Górnoprzepustowy";
+
+    public static final String RECTANGURALWINDOW        = "Prostokątne";
+    public static final String HAMMINGWINDOW            = "Hamminga";
+    public static final String HANNINGWINDOW            = "Hanninga";
+    public static final String BLACKMANWINDOW           = "Blackmana";
+
     public static ObservableList<String> reconstructionTypes = FXCollections.observableArrayList(
             RECONSTRUCTION_ZERO,
             RECONSTRUCTION_FIRST,
@@ -46,6 +55,19 @@ public class Utils {
             UNIT_JUMP_SIGNAL,
             UNIT_PULSE,
             PULSE_NOISE
+    );
+
+    public static ObservableList<String> filterTypes = FXCollections.observableArrayList(
+            LOWPASSFILTER,
+            BANDPASSFILTER,
+            HIGHPASSFILTER
+    );
+
+    public static ObservableList<String> windowTypes = FXCollections.observableArrayList(
+            RECTANGURALWINDOW,
+            HAMMINGWINDOW,
+            HANNINGWINDOW,
+            BLACKMANWINDOW
     );
 
     public static Map<String, Integer> getHistogramData(Signal signal, Integer binsNum) {

@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class MainAppController {
     public static ObservableList<Signal> signalItems = FXCollections.observableArrayList();
@@ -49,14 +50,16 @@ public class MainAppController {
     @FXML Pane zad1Panel;
     @FXML Pane zad2Panel;
     @FXML ChoiceBox<String> reconstructionChooser;
+    @FXML ChoiceBox<String> filterChooser;
+    @FXML ChoiceBox<String> windowChooser;
     @FXML SwingNode swingNodeReconstruction;
     @FXML SwingNode swingNodeSampling;
     @FXML SwingNode swingNodeQuantization;
-    @FXML SwingNode swingNodeFiltering;
-    @FXML ScatterChart<String, Double> quantizationLineChart;
+    @FXML SwingNode swingNodeLowPassFilter;
     @FXML TextField numOfSamplesTxt;
     @FXML TextField numOfSamplesTxt1;
     @FXML TextField numOfBitsTxt;
+    @FXML TextField filterRowTxt;
 
     @FXML NumberAxis lineXAxis;
     @FXML NumberAxis lineYAxis;
@@ -82,11 +85,11 @@ public class MainAppController {
     @FXML BarChart<String, Integer> barChart;
 
     @FXML ListView<Signal> signalList;
-    @FXML Label noSignalLbl;
 
     static Integer numOfSamples;
     private Integer numOfBits;
     private Double reconstructionFrequency;
+    private Integer filterRow;
 
     public void init(Stage stage) {
         this.stage = stage;
@@ -202,13 +205,13 @@ public class MainAppController {
     private void generateSamplingChart(ActionEvent e) {
         if (signalList.getSelectionModel().getSelectedItem() == null || numOfSamplesTxt.getText().isEmpty()) return;
 
-        this.numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
+        numOfSamples = Integer.valueOf(numOfSamplesTxt.getText());
         if (numOfSamples > signalList.getSelectionModel().getSelectedItem().getDuration() * signalList.getSelectionModel().getSelectedItem().getFrequencySampling()) return;
 
         this.reconstructionFrequency = (double) numOfSamples / signalList.getSelectionModel().getSelectedItem().getDuration();
 
 
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
 
         SwingCharts.createSamplingChart(swingNodeSampling,"Wykres próbkowania", signalList.getSelectionModel().getSelectedItem().getData(), samplingSignalData);
 
@@ -220,7 +223,7 @@ public class MainAppController {
         if (signalList.getSelectionModel().getSelectedItem() == null || numOfBitsTxt.getText().isEmpty() || numOfSamples == null) return;
 
         this.numOfBits = Integer.valueOf(numOfBitsTxt.getText());
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
         Map<Double, Double> quant = SamplingUtils.calculateQuantization(samplingSignalData, this.numOfBits);
         SwingCharts.createQuantizationChart(swingNodeQuantization, "Wykres kwantyzacji", quant, samplingSignalData);
 
@@ -234,7 +237,7 @@ public class MainAppController {
                 reconstructionFrequency == null ||
                 numOfSamples == null) return;
 
-        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), this.numOfSamples);
+        Map<Double, Double> samplingSignalData = SamplingUtils.generateSampleSignal(signalList.getSelectionModel().getSelectedItem(), numOfSamples);
 
         Map<Double, Double> reconstruction = null;
 
@@ -263,8 +266,55 @@ public class MainAppController {
         if (numOfSamplesTxt1.getText().equals("")) {
             return;
         }
-        this.numOfSamples = Integer.valueOf( numOfSamplesTxt1.getText() );
+        numOfSamples = Integer.valueOf( numOfSamplesTxt1.getText() );
         createSignalChooseWindow( Utils.WEAVE );
+    }
+
+    @FXML
+    private void filterSignal(ActionEvent e) {
+        if (filterRowTxt.getText().equals( "" )) {
+            return;
+        }
+
+        this.filterRow = Integer.valueOf( filterRowTxt.getText() );
+        TreeMap<Double, Double> filteringResult = new TreeMap<>( FilteringUtils.lowPassFilter( filterRow ) );
+
+        switch (filterChooser.getValue()) {
+            case Utils.LOWPASSFILTER: {
+                break;
+            }
+            case Utils.BANDPASSFILTER: {
+                filteringResult = new TreeMap<>( FilteringUtils.bandPassFilter( filteringResult ) );
+                break;
+            }
+            case Utils.HIGHPASSFILTER: {
+                filteringResult = new TreeMap<>( FilteringUtils.highPassFilter( filteringResult ) );
+                break;
+            }
+        }
+
+        switch (windowChooser.getValue()) {
+            case Utils.RECTANGURALWINDOW: {
+                break;
+            }
+            case Utils.HAMMINGWINDOW: {
+                filteringResult = new TreeMap<>( FilteringUtils.hammingWindow( filteringResult ) );
+                break;
+            }
+            case Utils.HANNINGWINDOW: {
+                filteringResult = new TreeMap<>( FilteringUtils.hanningWindow( filteringResult ) );
+                break;
+            }
+            case Utils.BLACKMANWINDOW: {
+                filteringResult = new TreeMap<>( FilteringUtils.blackmanWindow( filteringResult ) );
+                break;
+            }
+        }
+
+
+        filteringResult = FilteringUtils.weaveMap( filteringResult, signalList.getSelectionModel().getSelectedItem().getData() );
+
+        SwingCharts.createSamplingChart( swingNodeLowPassFilter, "Filtr " + filterChooser.getValue(), filteringResult, filteringResult );
     }
 
     private void setupListeners() {
@@ -353,9 +403,10 @@ public class MainAppController {
             e.printStackTrace();
         }
 
-        /*reconstructionChooser.setItems(Utils.reconstructionTypes);
-        reconstructionChooser.setValue(Utils.reconstructionTypes.get(0));
-        setSamplingInfo();*/
+        filterChooser.setItems( Utils.filterTypes );
+        filterChooser.setValue( Utils.filterTypes.get( 0 ) );
+        windowChooser.setItems( Utils.windowTypes );
+        windowChooser.setValue( Utils.windowTypes.get( 0 ) );
     }
 
     private void loadSamplingBottomPane() {
@@ -468,7 +519,7 @@ public class MainAppController {
         }
     }
 
-    public void createSignalDetailsWindow(Signal signal) {
+    private void createSignalDetailsWindow(Signal signal) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/SignalDetailsWindow.fxml"));
             SignalDetailsWindow signalDetailsWindow = new SignalDetailsWindow();
