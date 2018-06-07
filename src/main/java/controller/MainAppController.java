@@ -98,7 +98,7 @@ public class MainAppController {
     private void initialize() {
         signalList.setItems(signalItems);
         bucketsNumLbl.setText(String.valueOf((int) bucketsNumSlider.getValue()));
-//
+
         lineXAxis.setAutoRanging(false);
         lineXAxis.setLabel("t[s]");
 

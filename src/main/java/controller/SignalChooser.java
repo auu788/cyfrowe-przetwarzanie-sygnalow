@@ -46,7 +46,6 @@ public class SignalChooser implements Initializable {
         } else if (this.operation == Utils.DIV_OPERATION) {
             productSignal = ArithmeticUtils.divideSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.WEAVE) {
-            //double frequency = (double) MainAppController.numOfSamples / signal.getDuration();
             productSignal = FilteringUtils.weaveSignal( signal, chooserSignalsList.getSelectionModel().getSelectedItem() );
         }
 

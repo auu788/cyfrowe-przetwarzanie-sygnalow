@@ -17,10 +17,8 @@ public class FilteringUtils {
 
         firstValues = new ArrayList<>( first.getData().values() );
         secondValues = new ArrayList<>( second.getData().values() );
-        //firstValues = new ArrayList<>( SamplingUtils.generateSampleSignal( first, n ).values() );
-        //secondValues = new ArrayList<>( SamplingUtils.generateSampleSignal( second, n ).values() );
         signalLength = firstValues.size() + secondValues.size() - 1;
-        time = (first.getData().lastKey() + second.getData().lastKey()) / signalLength;
+        time = (first.getData().lastKey() + second.getData().lastKey() - first.getData().firstKey() - second.getData().firstKey()) / signalLength;
 
         for (int i = 0; i < signalLength; i++) {
             sum = 0;
