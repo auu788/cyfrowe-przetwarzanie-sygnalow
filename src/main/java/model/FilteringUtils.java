@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 public class FilteringUtils {
 
-    public static Signal weaveSignal(Signal first, Signal second, Double samplingFrequency, int n) {
+    public static Signal weaveSignal(Signal first, Signal second) {
         TreeMap<Double, Double> weaveOfSignals = new TreeMap<>();
         int signalLength;
         double sum, time;
@@ -15,10 +15,12 @@ public class FilteringUtils {
         List<Double> secondValues;
         String name;
 
-        firstValues = new ArrayList<>( SamplingUtils.generateSampleSignal( first, n ).values() );
-        secondValues = new ArrayList<>( SamplingUtils.generateSampleSignal( second, n ).values() );
+        firstValues = new ArrayList<>( first.getData().values() );
+        secondValues = new ArrayList<>( second.getData().values() );
+        //firstValues = new ArrayList<>( SamplingUtils.generateSampleSignal( first, n ).values() );
+        //secondValues = new ArrayList<>( SamplingUtils.generateSampleSignal( second, n ).values() );
         signalLength = firstValues.size() + secondValues.size() - 1;
-        time = firstValues.size() * 2 / samplingFrequency;
+        time = (first.getData().lastKey() + second.getData().lastKey()) / signalLength;
 
         for (int i = 0; i < signalLength; i++) {
             sum = 0;
@@ -28,11 +30,11 @@ public class FilteringUtils {
                 }
             }
 
-            weaveOfSignals.put( (time / signalLength) * i, sum );
+            weaveOfSignals.put( time * i, sum );
         }
         name = "( " + first.name + " * " + second.getName() + " )( n )";
 
-        return new OperationalSignal( name, samplingFrequency, weaveOfSignals );
+        return new OperationalSignal( name, 1 / time, weaveOfSignals );
     }
 
     public static TreeMap<Double, Double> weaveMap(TreeMap<Double, Double> first, TreeMap<Double, Double> second) {

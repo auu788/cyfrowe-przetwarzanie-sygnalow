@@ -55,9 +55,8 @@ public class MainAppController {
     @FXML SwingNode swingNodeReconstruction;
     @FXML SwingNode swingNodeSampling;
     @FXML SwingNode swingNodeQuantization;
-    @FXML SwingNode swingNodeLowPassFilter;
+    @FXML SwingNode swingNodeFilter;
     @FXML TextField numOfSamplesTxt;
-    @FXML TextField numOfSamplesTxt1;
     @FXML TextField numOfBitsTxt;
     @FXML TextField filterRowTxt;
 
@@ -86,7 +85,7 @@ public class MainAppController {
 
     @FXML ListView<Signal> signalList;
 
-    static Integer numOfSamples;
+    private Integer numOfSamples;
     private Integer numOfBits;
     private Double reconstructionFrequency;
     private Integer filterRow;
@@ -263,10 +262,6 @@ public class MainAppController {
 
     @FXML
     private void weaveSignals(ActionEvent e) {
-        if (numOfSamplesTxt1.getText().equals("")) {
-            return;
-        }
-        numOfSamples = Integer.valueOf( numOfSamplesTxt1.getText() );
         createSignalChooseWindow( Utils.WEAVE );
     }
 
@@ -314,7 +309,7 @@ public class MainAppController {
 
         filteringResult = FilteringUtils.weaveMap( filteringResult, signalList.getSelectionModel().getSelectedItem().getData() );
 
-        SwingCharts.createSamplingChart( swingNodeLowPassFilter, "Filtr " + filterChooser.getValue(), filteringResult, filteringResult );
+        SwingCharts.createSamplingChart( swingNodeFilter, "Filtr " + filterChooser.getValue(), filteringResult, filteringResult );
     }
 
     private void setupListeners() {

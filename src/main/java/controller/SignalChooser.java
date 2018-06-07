@@ -46,8 +46,8 @@ public class SignalChooser implements Initializable {
         } else if (this.operation == Utils.DIV_OPERATION) {
             productSignal = ArithmeticUtils.divideSignals(signal, chooserSignalsList.getSelectionModel().getSelectedItem());
         } else if (this.operation == Utils.WEAVE) {
-            double frequency = (double) MainAppController.numOfSamples / signal.getDuration();
-            productSignal = FilteringUtils.weaveSignal( signal, chooserSignalsList.getSelectionModel().getSelectedItem(), frequency, MainAppController.numOfSamples );
+            //double frequency = (double) MainAppController.numOfSamples / signal.getDuration();
+            productSignal = FilteringUtils.weaveSignal( signal, chooserSignalsList.getSelectionModel().getSelectedItem() );
         }
 
         MainAppController.signalItems.add( productSignal );
@@ -71,7 +71,9 @@ public class SignalChooser implements Initializable {
 
         MainAppController.signalItems.forEach(
                 sig -> {
-                    if (signal.getFrequencySampling().equals(sig.getFrequencySampling())) {
+                    if (signal.getFrequencySampling().equals(sig.getFrequencySampling()) && !this.operation.equals( Utils.WEAVE )) {
+                        validSignals.add(sig);
+                    } else if (this.operation.equals( Utils.WEAVE )){
                         validSignals.add(sig);
                     }
                 }
