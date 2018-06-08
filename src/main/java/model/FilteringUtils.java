@@ -18,7 +18,7 @@ public class FilteringUtils {
         firstValues = new ArrayList<>( first.getData().values() );
         secondValues = new ArrayList<>( second.getData().values() );
         signalLength = firstValues.size() + secondValues.size() - 1;
-        time = (first.getData().lastKey() + second.getData().lastKey() - first.getData().firstKey() - second.getData().firstKey()) / signalLength;
+        time = (first.getData().lastKey() + second.getData().lastKey() - first.getData().firstKey() - second.getData().firstKey()) / (signalLength - 1);
 
         for (int i = 0; i < signalLength; i++) {
             sum = 0;
@@ -35,7 +35,7 @@ public class FilteringUtils {
         return new OperationalSignal( name, 1 / time, weaveOfSignals );
     }
 
-    public static TreeMap<Double, Double> weaveMap(TreeMap<Double, Double> first, TreeMap<Double, Double> second) {
+    public static TreeMap<Double, Double> weaveMap(TreeMap<Double, Double> second, TreeMap<Double, Double> first) {
         TreeMap<Double, Double> weaveOfSignals = new TreeMap<>();
         int signalLength;
         double sum, time;
